@@ -32,8 +32,8 @@ nodes:
     type: Tomcat
 calls:
   - id: not null
-    source: ${User[[0]]}
-    target: ${projectB-pid:(.*)@skywalking-server-0001[[0]]}
+    source: ${User[0]}
+    target: ${projectB-pid:(.*)@skywalking-server-0001[0]}
   - id: not null
-    source: ${User[[0]]}
-    target: ${projectB-pid:(.*)@skywalking-server-0001[[1]]}
+    source: ${User[0]}
+    target: ${projectB-pid:(.*)@skywalking-server-0001[1]}

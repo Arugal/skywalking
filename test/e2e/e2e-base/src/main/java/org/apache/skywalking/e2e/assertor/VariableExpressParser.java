@@ -38,10 +38,10 @@ public class VariableExpressParser {
 
         express = express.substring(2, express.length() - 1);
 
-        int startIndexOfIndex = express.indexOf("[[");
+        int startIndexOfIndex = express.lastIndexOf("[");
         String regex = express.substring(0, startIndexOfIndex);
-        int endIndexOfIndex = express.indexOf("]]", startIndexOfIndex);
-        int expectedIndex = Integer.parseInt(express.substring(startIndexOfIndex + 2, endIndexOfIndex));
+        int endIndexOfIndex = express.indexOf("]", startIndexOfIndex);
+        int expectedIndex = Integer.parseInt(express.substring(startIndexOfIndex + 1, endIndexOfIndex));
         int expectedSize = expectedIndex + 1;
 
         List<T> mappings = new ArrayList<>(expectedSize);

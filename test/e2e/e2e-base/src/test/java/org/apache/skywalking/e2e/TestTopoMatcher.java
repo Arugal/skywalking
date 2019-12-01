@@ -20,13 +20,13 @@ import java.util.List;
  */
 public class TestTopoMatcher {
 
-    private InputStream expectedInputStream;
     private TopoMatcher topoMatcher;
 
     @Before
     public void setUp() throws IOException {
-        expectedInputStream = new ClassPathResource("topo.yml").getInputStream();
-        topoMatcher = new Yaml().loadAs(expectedInputStream, TopoMatcher.class);
+        try (InputStream expectedInputStream = new ClassPathResource("topo.yml").getInputStream()) {
+            topoMatcher = new Yaml().loadAs(expectedInputStream, TopoMatcher.class);
+        }
     }
 
     @Test
