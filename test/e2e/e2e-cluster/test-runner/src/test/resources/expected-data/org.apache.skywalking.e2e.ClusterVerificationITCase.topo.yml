@@ -33,23 +33,13 @@ nodes:
 calls:
   - id: not null
     source: ${User[0]}
-    detectPoints:
-      - SERVER
     target: ${consumer[0]}
   - id: not null
     source: ${127.0.0.1:9099[0]}
-    detectPoints:
-      - CLIENT
-      - SERVER
     target: ${provider[0]}
   - id: not null
     source: ${consumer[0]}
-    detectPoints:
-      - CLIENT
-      - SERVER
     target: ${127.0.0.1:9099[0]}
   - id: not null
     source: ${provider[0]}
-    detectPoints:
-      - CLIENT
     target: ${localhost:-1[0]}
