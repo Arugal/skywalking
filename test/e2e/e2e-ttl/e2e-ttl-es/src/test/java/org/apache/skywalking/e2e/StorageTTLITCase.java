@@ -214,7 +214,7 @@ public class StorageTTLITCase {
                         .setEndTime(endTime)
                         .build()
                 );
-                Thread.sleep(10000);
+                Thread.sleep(2000);
             }
         }
     }
@@ -224,7 +224,7 @@ public class StorageTTLITCase {
         final LocalDateTime queryEnd,
         final String step
     ) throws Exception {
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 3; i++) {
             try {
                 final List<Service> services = queryClient.services(
                     new ServicesQuery()
@@ -247,7 +247,8 @@ public class StorageTTLITCase {
                         .end(queryEnd)
                 );
             } catch (Throwable ignored) {
-                Thread.sleep(10000);
+                log.error(ignored.getMessage());
+                Thread.sleep(5000);
             }
         }
         return null;
