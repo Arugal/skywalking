@@ -199,6 +199,7 @@ public class StorageTTLITCase {
                     .build()
             );
             final Metrics serviceMetrics = queryMetrics(queryStart, queryEnd, step);
+            log.info("ensureSendingMetricsWorks-serviceMetrics: {}", serviceMetrics);
             final AtLeastOneOfMetricsMatcher instanceRespTimeMatcher = new AtLeastOneOfMetricsMatcher();
             final MetricsValueMatcher greaterThanZero = new MetricsValueMatcher();
             greaterThanZero.setValue("gt 0");
@@ -223,7 +224,7 @@ public class StorageTTLITCase {
         final LocalDateTime queryEnd,
         final String step
     ) throws Exception {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 6; i++) {
             try {
                 final List<Service> services = queryClient.services(
                     new ServicesQuery()
