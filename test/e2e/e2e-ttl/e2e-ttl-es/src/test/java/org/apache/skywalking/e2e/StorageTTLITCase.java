@@ -28,11 +28,7 @@ import org.apache.skywalking.apm.network.servicemesh.MeshProbeDownstream;
 import org.apache.skywalking.apm.network.servicemesh.Protocol;
 import org.apache.skywalking.apm.network.servicemesh.ServiceMeshMetric;
 import org.apache.skywalking.apm.network.servicemesh.ServiceMeshMetricServiceGrpc;
-import org.apache.skywalking.e2e.metrics.AllOfMetricsMatcher;
-import org.apache.skywalking.e2e.metrics.AtLeastOneOfMetricsMatcher;
-import org.apache.skywalking.e2e.metrics.Metrics;
-import org.apache.skywalking.e2e.metrics.MetricsQuery;
-import org.apache.skywalking.e2e.metrics.MetricsValueMatcher;
+import org.apache.skywalking.e2e.metrics.*;
 import org.apache.skywalking.e2e.service.Service;
 import org.apache.skywalking.e2e.service.ServicesQuery;
 import org.junit.Before;
@@ -214,7 +210,7 @@ public class StorageTTLITCase {
                         .setEndTime(endTime)
                         .build()
                 );
-                Thread.sleep(2000);
+                Thread.sleep(10000);
             }
         }
     }
@@ -224,7 +220,7 @@ public class StorageTTLITCase {
         final LocalDateTime queryEnd,
         final String step
     ) throws Exception {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 10; i++) {
             try {
                 final List<Service> services = queryClient.services(
                     new ServicesQuery()
@@ -248,7 +244,7 @@ public class StorageTTLITCase {
                 );
             } catch (Throwable ignored) {
                 log.error(ignored.getMessage());
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             }
         }
         return null;
