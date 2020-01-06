@@ -41,7 +41,7 @@ public class TraceSegmentReportServiceHandler extends TraceSegmentReportServiceG
     public TraceSegmentReportServiceHandler(SegmentParseV2.Producer segmentProducer, ModuleManager moduleManager) {
         this.segmentProducer = segmentProducer;
         MetricsCreator metricsCreator = moduleManager.find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
-        histogram = metricsCreator.createHistogramMetric("trace_grpc_v6_in_latency", "The process latency of service mesh telemetry",
+        histogram = metricsCreator.createHistogramMetric("trace_grpc_v6_in_latency", "The process trace segment",
             MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
     }
 

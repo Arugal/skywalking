@@ -72,7 +72,7 @@ public class SegmentParseV2 {
                 MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
             TRACE_BUFFER_FILE_OUT = metricsCreator.createCounter("v6_trace_buffer_file_out", "The number of trace segment out of the buffer file",
                 MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
-            TRACE_PARSE_ERROR = metricsCreator.createCounter("v6_trace_parse_error", "The number of trace segment out of the buffer file",
+            TRACE_PARSE_ERROR = metricsCreator.createCounter("v6_trace_parse_error", "The number of trace segment parse error",
                 MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
         }
 
