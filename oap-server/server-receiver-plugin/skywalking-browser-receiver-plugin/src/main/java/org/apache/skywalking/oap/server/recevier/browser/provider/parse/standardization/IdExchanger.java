@@ -16,11 +16,13 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization;
+
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.StandardBuilder;
 
 /**
  * @author zhangwei
  */
-public enum BrowserPerfSource {
-    Browser, Buffer;
+public interface IdExchanger<T extends StandardBuilder> {
+    boolean exchange(T standardBuilder, int serviceId);
 }

@@ -16,11 +16,17 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener;
+
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfCoreInfo;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfDataDecorator;
 
 /**
  * @author zhangwei
  */
-public enum BrowserPerfSource {
-    Browser, Buffer;
+public interface BrowserPerfListener {
+
+    void build();
+
+    void parse(BrowserPerfDataDecorator decorator, BrowserPerfCoreInfo coreInfo);
 }

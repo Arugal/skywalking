@@ -29,13 +29,6 @@ import org.apache.skywalking.oap.server.core.analysis.data.QueueData;
  */
 public class BrowserPerfStandardization implements QueueData {
 
-    @Getter
-    private final String id;
-
-    public BrowserPerfStandardization(String id) {
-        this.id = id;
-    }
-
     private boolean endOfBatch = false;
 
     @Override

@@ -18,9 +18,27 @@
 
 package org.apache.skywalking.oap.server.recevier.browser.provider.parse;
 
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.BrowserPerfListenerFactory;
+
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * @author zhangwei
  */
-public enum BrowserPerfSource {
-    Browser, Buffer;
+public class BrowserPerfParseListenerManager {
+
+    private List<BrowserPerfListenerFactory> browserPerfListenerFactories;
+
+    public BrowserPerfParseListenerManager() {
+        this.browserPerfListenerFactories = new LinkedList<>();
+    }
+
+    public void add(BrowserPerfListenerFactory browserPerfListenerFactory) {
+        this.browserPerfListenerFactories.add(browserPerfListenerFactory);
+    }
+
+    List<BrowserPerfListenerFactory> getBrowserPerfListenerFactories() {
+        return browserPerfListenerFactories;
+    }
 }

@@ -25,12 +25,21 @@ import org.apache.skywalking.oap.server.library.module.*;
 import org.apache.skywalking.oap.server.receiver.sharing.server.SharingServerModule;
 import org.apache.skywalking.oap.server.recevier.browser.module.BrowserModule;
 import org.apache.skywalking.oap.server.recevier.browser.provider.handler.BrowserPerfServiceHandler;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfParse;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfParseListenerManager;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfStandardizationWorker;
 import org.apache.skywalking.oap.server.telemetry.TelemetryModule;
+
+import java.io.IOException;
 
 /**
  * @author zhangwei
  */
 public class BrowserModuleProvider extends ModuleProvider {
+
+
+    private final BrowserServiceModuleConfig moduleConfig = new BrowserServiceModuleConfig();
+    private BrowserPerfParse.Producer browserPerfProducer;
 
     @Override
     public String name() {
@@ -44,19 +53,32 @@ public class BrowserModuleProvider extends ModuleProvider {
 
     @Override
     public ModuleConfig createConfigBeanIfAbsent() {
-        return null;
+        return moduleConfig;
     }
 
     @Override
-    public void prepare() throws ServiceNotProvidedException, ModuleStartException {
+    public void prepare() throws ServiceNotProvidedException {
+        browserPerfProducer = new BrowserPerfParse.Producer(getManager(), listenerManager(), moduleConfig);
+    }
 
+    public BrowserPerfParseListenerManager listenerManager() {
+        BrowserPerfParseListenerManager listenerManager = new BrowserPerfParseListenerManager();
+        return listenerManager;
     }
 
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
         GRPCHandlerRegister grpcHandlerRegister = getManager().find(SharingServerModule.NAME).provider().getService(GRPCHandlerRegister.class);
 
-        grpcHandlerRegister.addHandler(new BrowserPerfServiceHandler(null, null));
+        try {
+            grpcHandlerRegister.addHandler(new BrowserPerfServiceHandler(browserPerfProducer, getManager()));
+
+            BrowserPerfStandardizationWorker standardizationWorker = new BrowserPerfStandardizationWorker(getManager(), browserPerfProducer,
+                    moduleConfig.getBufferPath(), moduleConfig.getBufferOffsetMaxFileSize(), moduleConfig.getBufferDataMaxFileSize(), moduleConfig.isBufferFileCleanWhenRestart());
+            browserPerfProducer.setStandardizationWorker(standardizationWorker);
+        } catch (IOException e) {
+            throw new ModuleStartException(e.getMessage(), e);
+        }
     }
 
     @Override
@@ -66,6 +88,6 @@ public class BrowserModuleProvider extends ModuleProvider {
 
     @Override
     public String[] requiredModules() {
-        return new String[] {TelemetryModule.NAME, CoreModule.NAME, SharingServerModule.NAME, ConfigurationModule.NAME};
+        return new String[]{TelemetryModule.NAME, CoreModule.NAME, SharingServerModule.NAME, ConfigurationModule.NAME};
     }
 }

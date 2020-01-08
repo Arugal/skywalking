@@ -16,11 +16,11 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator;
 
 /**
  * @author zhangwei
  */
-public enum BrowserPerfSource {
-    Browser, Buffer;
+public interface StandardBuilder {
+    void toBuilder();
 }

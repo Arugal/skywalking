@@ -16,10 +16,18 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse;
+package org.apache.skywalking.oap.server.recevier.browser.provider;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.skywalking.oap.server.library.module.ModuleConfig;
 
 /**
  * @author zhangwei
  */
-public class PertListenerFactory {
+public class BrowserServiceModuleConfig extends ModuleConfig {
+    @Setter @Getter private String bufferPath;
+    @Setter @Getter private int bufferOffsetMaxFileSize;
+    @Setter @Getter private int bufferDataMaxFileSize;
+    @Setter @Getter private boolean bufferFileCleanWhenRestart;
 }

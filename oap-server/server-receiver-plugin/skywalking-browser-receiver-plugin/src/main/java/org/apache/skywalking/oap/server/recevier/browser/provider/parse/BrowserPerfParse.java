@@ -21,14 +21,28 @@ package org.apache.skywalking.oap.server.recevier.browser.provider.parse;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.skywalking.apm.network.language.agent.BrowserPerfData;
+import org.apache.skywalking.oap.server.core.Const;
+import org.apache.skywalking.oap.server.core.CoreModule;
+import org.apache.skywalking.oap.server.core.analysis.TimeBucket;
+import org.apache.skywalking.oap.server.core.cache.ServiceInstanceInventoryCache;
 import org.apache.skywalking.oap.server.library.buffer.BufferData;
 import org.apache.skywalking.oap.server.library.buffer.DataStreamReader;
 import org.apache.skywalking.oap.server.library.module.ModuleManager;
+import org.apache.skywalking.oap.server.recevier.browser.provider.BrowserServiceModuleConfig;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserErrorLogDecorator;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfCoreInfo;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfDataDecorator;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.BrowserPerfListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfStandardization;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfStandardizationWorker;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.EndpointIdExchanger;
 import org.apache.skywalking.oap.server.telemetry.TelemetryModule;
 import org.apache.skywalking.oap.server.telemetry.api.CounterMetrics;
 import org.apache.skywalking.oap.server.telemetry.api.MetricsCreator;
 import org.apache.skywalking.oap.server.telemetry.api.MetricsTag;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author zhangwei
@@ -36,15 +50,26 @@ import org.apache.skywalking.oap.server.telemetry.api.MetricsTag;
 @Slf4j
 public class BrowserPerfParse {
 
-    private ModuleManager moduleManager;
+    private final ModuleManager moduleManager;
+    private final BrowserPerfParseListenerManager listenerManager;
+    private final BrowserServiceModuleConfig config;
+    private final List<BrowserPerfListener> browserPerfListeners;
+    private final ServiceInstanceInventoryCache serviceInstanceInventoryCache;
+    private final BrowserPerfCoreInfo browserPerfCoreInfo;
     @Setter
     private BrowserPerfStandardizationWorker standardizationWorker;
     private volatile static CounterMetrics BROWSER_PERF_BUFFER_FILE_RETRY;
     private volatile static CounterMetrics BROWSER_PERF_BUFFER_FILE_OUT;
     private volatile static CounterMetrics BROWSER_PERF_PARSE_ERROR;
 
-    public BrowserPerfParse(ModuleManager moduleManager) {
+    public BrowserPerfParse(ModuleManager moduleManager, BrowserPerfParseListenerManager listenerManager, BrowserServiceModuleConfig config) {
         this.moduleManager = moduleManager;
+        this.listenerManager = listenerManager;
+        this.config = config;
+        this.browserPerfListeners = new LinkedList<>();
+
+        this.browserPerfCoreInfo = new BrowserPerfCoreInfo();
+
         if (BROWSER_PERF_BUFFER_FILE_RETRY == null) {
             MetricsCreator metricsCreator = moduleManager.find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
             BROWSER_PERF_BUFFER_FILE_RETRY = metricsCreator.createCounter("browser_perf_buffer_file_retry", "The number of retry browser perf from the buffer file, but haven't registered successfully.",
@@ -54,19 +79,44 @@ public class BrowserPerfParse {
             BROWSER_PERF_PARSE_ERROR = metricsCreator.createCounter("browser_perf_parse_error", "The number of browser perf parse data",
                     MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
         }
+
+        this.serviceInstanceInventoryCache = moduleManager.find(CoreModule.NAME).provider().getService(ServiceInstanceInventoryCache.class);
     }
 
     public boolean parse(BufferData<BrowserPerfData> bufferData, BrowserPerfSource source) {
-        // create browser perf listeners
+        createBrowserPerfListeners();
 
         try {
             BrowserPerfData browserPerfData = bufferData.getMessageType();
-            // id exchanger
 
-            // register endpoint
+            final int serviceVersionId = browserPerfData.getServiceVersionId();
+            if (serviceInstanceInventoryCache.get(serviceVersionId) == null) {
+                log.warn("Cannot recognize service version id [{}] from cache, browser perf data will be ignored", serviceVersionId);
+                return true; // to mark it "completed" thus won't be retried
+            }
 
-            // source builder
-            return true;
+            BrowserPerfDataDecorator decorator = new BrowserPerfDataDecorator(browserPerfData);
+            if (!preBuild(decorator)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("This browser perf data id exchange not success, write to buffer file, serviceId:{}, pagePath:{}",
+                            decorator.getServiceId(), decorator.getPagePath());
+                }
+
+                if (source.equals(BrowserPerfSource.Browser)) {
+                    writeToBufferFile(browserPerfData);
+                } else {
+                    BROWSER_PERF_BUFFER_FILE_RETRY.inc();
+                }
+                return false;
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("This browser perf data id exchange success, serviceId: {}, pagePath:{}",
+                            decorator.getServiceId(), decorator.getPagePath());
+                }
+
+                notifyListenerToBuild();
+                return true;
+            }
         } catch (Throwable e) {
             BROWSER_PERF_PARSE_ERROR.inc();
             log.error(e.getMessage(), e);
@@ -74,30 +124,90 @@ public class BrowserPerfParse {
         }
     }
 
+    private boolean preBuild(BrowserPerfDataDecorator decorator) {
+        if (decorator.getTime() == Const.NONE) {
+            // Use the server side current time, if the client side not set,
+            long nowMinute = System.currentTimeMillis();
+            decorator.setTime(nowMinute);
+            if (decorator.isError()) {
+                for (int i = 0; i < decorator.getBrowserErrorLogCount(); i++) {
+                    BrowserErrorLogDecorator errorLogDecorator = decorator.getBrowserErrorLog(i);
+                    if (errorLogDecorator.getTime() == Const.NONE) {
+                        errorLogDecorator.setTime(nowMinute);
+                    }
+                }
+            }
+        }
+
+        boolean exchanged = true;
+        if (!EndpointIdExchanger.getInstance(moduleManager).exchange(decorator, browserPerfCoreInfo.getServiceId())) {
+            exchanged = false;
+        }
+
+        if (exchanged) {
+            browserPerfCoreInfo.setServiceId(decorator.getServiceId());
+            browserPerfCoreInfo.setServiceVersionId(decorator.getServiceVersionId());
+            browserPerfCoreInfo.setPagePathId(decorator.getPagePathId());
+            browserPerfCoreInfo.setPagePath(decorator.getPagePath());
+            browserPerfCoreInfo.setError(decorator.isError());
+            long minuteTimeBucket = TimeBucket.getMinuteTimeBucket(decorator.getTime());
+            browserPerfCoreInfo.setMinuteTimeBucket(minuteTimeBucket);
+
+            notifyParseListener(decorator);
+        }
+        return exchanged;
+    }
+
+    private void writeToBufferFile(BrowserPerfData browserPerf) {
+        if (log.isDebugEnabled()) {
+            log.debug("push to segment buffer write worker, serviceId: {}, serviceVersionId: {}", browserPerf.getServiceId(), browserPerf.getServiceVersionId());
+        }
+
+        BrowserPerfStandardization standardization = new BrowserPerfStandardization();
+        standardization.setBrowserPerfData(browserPerf);
+        standardizationWorker.in(standardization);
+    }
+
+    private void notifyListenerToBuild() {
+        browserPerfListeners.forEach(BrowserPerfListener::build);
+    }
+
+    private void notifyParseListener(BrowserPerfDataDecorator decorator) {
+        browserPerfListeners.forEach(listener -> listener.parse(decorator, browserPerfCoreInfo));
+    }
+
+    private void createBrowserPerfListeners() {
+        listenerManager.getBrowserPerfListenerFactories().forEach(listenerFactory -> browserPerfListeners.add(listenerFactory.create(moduleManager, config)));
+    }
+
     public static class Producer implements DataStreamReader.CallBack<BrowserPerfData> {
 
         @Setter
         private BrowserPerfStandardizationWorker standardizationWorker;
         private final ModuleManager moduleManager;
+        private final BrowserPerfParseListenerManager listenerManager;
+        private final BrowserServiceModuleConfig config;
 
-        public Producer(ModuleManager moduleManager) {
+        public Producer(ModuleManager moduleManager, BrowserPerfParseListenerManager listenerManager, BrowserServiceModuleConfig config) {
             this.moduleManager = moduleManager;
+            this.listenerManager = listenerManager;
+            this.config = config;
         }
 
         public void send(BrowserPerfData perf) {
-            BrowserPerfParse perfParse = new BrowserPerfParse(moduleManager);
+            BrowserPerfParse perfParse = new BrowserPerfParse(moduleManager, listenerManager, config);
             perfParse.setStandardizationWorker(standardizationWorker);
-            perfParse.parse(new BufferData<>(perf), BrowserPerfSource.Agent);
+            perfParse.parse(new BufferData<>(perf), BrowserPerfSource.Browser);
         }
 
         @Override
         public boolean call(BufferData<BrowserPerfData> bufferData) {
-            BrowserPerfParse perfParse = new BrowserPerfParse(moduleManager);
+            BrowserPerfParse perfParse = new BrowserPerfParse(moduleManager, listenerManager, config);
             boolean parseResult = perfParse.parse(bufferData, BrowserPerfSource.Buffer);
             if (parseResult) {
                 BROWSER_PERF_BUFFER_FILE_OUT.inc();
             }
-            return false;
+            return parseResult;
         }
     }
 }

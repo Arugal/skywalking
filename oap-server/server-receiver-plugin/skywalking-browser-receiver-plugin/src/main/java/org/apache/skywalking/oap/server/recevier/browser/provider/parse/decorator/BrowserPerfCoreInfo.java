@@ -16,11 +16,22 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author zhangwei
  */
-public enum BrowserPerfSource {
-    Browser, Buffer;
+@Setter
+@Getter
+public class BrowserPerfCoreInfo {
+
+    private int serviceId;
+    private int serviceVersionId;
+    private int pagePathId;
+    private String pagePath;
+    private long minuteTimeBucket;
+    private boolean isError;
 }
