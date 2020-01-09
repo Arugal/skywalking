@@ -37,7 +37,6 @@ import java.io.IOException;
  */
 public class BrowserModuleProvider extends ModuleProvider {
 
-
     private final BrowserServiceModuleConfig moduleConfig = new BrowserServiceModuleConfig();
     private BrowserPerfParse.Producer browserPerfProducer;
 

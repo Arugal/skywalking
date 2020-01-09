@@ -56,8 +56,7 @@ public class BrowserPerfParse {
     private final List<BrowserPerfListener> browserPerfListeners;
     private final ServiceInstanceInventoryCache serviceInstanceInventoryCache;
     private final BrowserPerfCoreInfo browserPerfCoreInfo;
-    @Setter
-    private BrowserPerfStandardizationWorker standardizationWorker;
+    @Setter private BrowserPerfStandardizationWorker standardizationWorker;
     private volatile static CounterMetrics BROWSER_PERF_BUFFER_FILE_RETRY;
     private volatile static CounterMetrics BROWSER_PERF_BUFFER_FILE_OUT;
     private volatile static CounterMetrics BROWSER_PERF_PARSE_ERROR;
@@ -67,7 +66,6 @@ public class BrowserPerfParse {
         this.listenerManager = listenerManager;
         this.config = config;
         this.browserPerfListeners = new LinkedList<>();
-
         this.browserPerfCoreInfo = new BrowserPerfCoreInfo();
 
         if (BROWSER_PERF_BUFFER_FILE_RETRY == null) {
@@ -126,7 +124,7 @@ public class BrowserPerfParse {
 
     private boolean preBuild(BrowserPerfDataDecorator decorator) {
         if (decorator.getTime() == Const.NONE) {
-            // Use the server side current time, if the client side not set,
+            // Use the server side current time, if the client side not set.
             long nowMinute = System.currentTimeMillis();
             decorator.setTime(nowMinute);
             if (decorator.isError()) {

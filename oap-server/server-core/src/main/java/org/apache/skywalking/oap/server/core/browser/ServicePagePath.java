@@ -18,8 +18,19 @@
 
 package org.apache.skywalking.oap.server.core.browser;
 
+import org.apache.skywalking.oap.server.core.source.Source;
+
 /**
  * @author zhangwei
  */
-public class BrowserEndpointInventory {
+public class ServicePagePath extends Source {
+    @Override
+    public int scope() {
+        return 0;
+    }
+
+    @Override
+    public String getEntityId() {
+        return null;
+    }
 }

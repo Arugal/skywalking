@@ -21,5 +21,5 @@ package org.apache.skywalking.oap.server.core.browser;
 /**
  * @author zhangwei
  */
-public class BrowserServiceInventory {
+public class ServiceVersionPagePath {
 }
