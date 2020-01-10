@@ -44,6 +44,9 @@ SRC_SERVICE_INSTANCE_CLR_GC: 'ServiceInstanceCLRGC';
 SRC_SERVICE_INSTANCE_CLR_THREAD: 'ServiceInstanceCLRThread';
 SRC_ENVOY_INSTANCE_METRIC: 'EnvoyInstanceMetric';
 
+// Browser keywords
+SRC_BROWSER_SERVICE_PAGE_PATH: 'ServicePagePath';
+
 //hard code sources, only used when need to be deactived.
 SRC_SEGMENT: 'segment';
 SRC_TOP_N_DB_STATEMENT: 'top_n_database_statement';

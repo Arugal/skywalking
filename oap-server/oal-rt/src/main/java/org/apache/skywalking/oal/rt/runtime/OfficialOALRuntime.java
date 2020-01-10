@@ -16,21 +16,21 @@
  *
  */
 
-package org.apache.skywalking.oap.server.core.browser;
-
-import org.apache.skywalking.oap.server.core.source.Source;
+package org.apache.skywalking.oal.rt.runtime;
 
 /**
  * @author zhangwei
  */
-public class ServicePagePath extends Source {
-    @Override
-    public int scope() {
-        return 0;
-    }
+public class OfficialOALRuntime extends OALRuntime {
 
-    @Override
-    public String getEntityId() {
-        return null;
+    private static final String SOURCE_PACKAGE = "org.apache.skywalking.oap.server.core.source.";
+    private static final String DYNAMIC_METRICS_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.official.metrics.";
+    private static final String DYNAMIC_METRICS_BUILDER_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.official.metrics.builder.";
+    private static final String DYNAMIC_DISPATCHER_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.official.dispatcher.";
+
+    private static final String OAL_CONFIG_FILE = "official_analysis.oal";
+
+    public OfficialOALRuntime() {
+        super(SOURCE_PACKAGE, DYNAMIC_METRICS_CLASS_PACKAGE, DYNAMIC_METRICS_BUILDER_CLASS_PACKAGE, DYNAMIC_DISPATCHER_CLASS_PACKAGE, OAL_CONFIG_FILE);
     }
 }

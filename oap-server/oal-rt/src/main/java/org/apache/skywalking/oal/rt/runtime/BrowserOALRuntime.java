@@ -15,11 +15,21 @@
  * limitations under the License.
  *
  */
-
-package org.apache.skywalking.oap.server.core.browser;
+package org.apache.skywalking.oal.rt.runtime;
 
 /**
  * @author zhangwei
  */
-public class ServiceVersionPagePath {
+public class BrowserOALRuntime extends OALRuntime {
+
+    private static final String SOURCE_PACKAGE = "org.apache.skywalking.oap.server.core.browser.source.";
+    private static final String DYNAMIC_METRICS_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.browser.metrics.";
+    private static final String DYNAMIC_METRICS_BUILDER_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.browser.metrics.builder.";
+    private static final String DYNAMIC_DISPATCHER_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.browser.dispatcher.";
+
+    private static final String OAL_CONFIG_FILE = "browser_analysis.oal";
+
+    public BrowserOALRuntime() {
+        super(SOURCE_PACKAGE, DYNAMIC_METRICS_CLASS_PACKAGE, DYNAMIC_METRICS_BUILDER_CLASS_PACKAGE, DYNAMIC_DISPATCHER_CLASS_PACKAGE, OAL_CONFIG_FILE);
+    }
 }

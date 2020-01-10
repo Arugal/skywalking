@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.skywalking.oal.rt;
+package org.apache.skywalking.oal.rt.runtime;
 
 import freemarker.template.Configuration;
 import freemarker.template.Version;
@@ -47,6 +47,7 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.skywalking.apm.util.StringUtil;
 import org.apache.skywalking.oal.rt.output.AllDispatcherContext;
@@ -77,23 +78,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author wusheng
  */
-public class OALRuntime implements OALEngine {
+public abstract class OALRuntime implements OALEngine {
     private static final Logger logger = LoggerFactory.getLogger(OALRuntime.class);
 
     private static final String CLASS_FILE_CHARSET = "UTF-8";
     private static final String METRICS_FUNCTION_PACKAGE = "org.apache.skywalking.oap.server.core.analysis.metrics.";
-    private static final String DYNAMIC_METRICS_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.metrics.";
-    private static final String DYNAMIC_METRICS_BUILDER_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.metrics.builder.";
-    private static final String DYNAMIC_DISPATCHER_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.dispatcher.";
     private static final String WITH_METADATA_INTERFACE = "org.apache.skywalking.oap.server.core.analysis.metrics.WithMetadata";
     private static final String STORAGE_BUILDER_INTERFACE = "org.apache.skywalking.oap.server.core.storage.StorageBuilder";
     private static final String DISPATCHER_INTERFACE = "org.apache.skywalking.oap.server.core.analysis.SourceDispatcher";
-    private static final String SOURCE_PACKAGE = "org.apache.skywalking.oap.server.core.source.";
     private static final String METRICS_STREAM_PROCESSOR = "org.apache.skywalking.oap.server.core.analysis.worker.MetricsStreamProcessor";
     private static final String[] METRICS_CLASS_METHODS =
         {"id", "hashCode", "remoteHashCode", "equals", "serialize", "deserialize", "getMeta", "toHour", "toDay", "toMonth"};
     private static final String[] METRICS_BUILDER_CLASS_METHODS =
         {"data2Map", "map2Data"};
+    @Getter private final String sourcePackage;
+    @Getter private final String dynamicMetricsPackage;
+    @Getter private final String dynamicMetricsBuilderPackage;
+    @Getter private final String dynamicDispatcherPackage;
+    @Getter private final String oalConfigFile;
     private final ClassPool classPool;
     private ClassLoader currentClassLoader;
     private Configuration configuration;
@@ -104,7 +106,13 @@ public class OALRuntime implements OALEngine {
     private final List<Class> dispatcherClasses;
     private final boolean openEngineDebug;
 
-    public OALRuntime() {
+    public OALRuntime(String sourcePackage, String dynamicMetricsPackage,
+                      String dynamicMetricsBuilderPackage, String dynamicDispatcherPackage, String oalConfigFile) {
+        this.sourcePackage = sourcePackage;
+        this.dynamicMetricsPackage = dynamicMetricsPackage;
+        this.dynamicMetricsBuilderPackage = dynamicMetricsBuilderPackage;
+        this.dynamicDispatcherPackage = dynamicDispatcherPackage;
+        this.oalConfigFile = oalConfigFile;
         classPool = ClassPool.getDefault();
         configuration = new Configuration(new Version("2.3.28"));
         configuration.setEncoding(Locale.ENGLISH, CLASS_FILE_CHARSET);
@@ -136,9 +144,9 @@ public class OALRuntime implements OALEngine {
         }
 
         try {
-            read = ResourceUtils.read("official_analysis.oal");
+            read = ResourceUtils.read(getOalConfigFile());
         } catch (FileNotFoundException e) {
-            throw new ModuleStartException("Can't locate official_analysis.oal", e);
+            throw new ModuleStartException("Can't locate " + getOalConfigFile(), e);
         }
 
         OALScripts oalScripts;
@@ -369,7 +377,7 @@ public class OALRuntime implements OALEngine {
             /**
              * Set generic signature
              */
-            String sourceClassName = SOURCE_PACKAGE + dispatcherContext.getSource();
+            String sourceClassName = getSourcePackage() + dispatcherContext.getSource();
             SignatureAttribute.ClassSignature dispatcherSignature = new SignatureAttribute.ClassSignature(null, null,
                 // Set interface and its generic params
                 new SignatureAttribute.ClassType[] {
@@ -420,15 +428,15 @@ public class OALRuntime implements OALEngine {
     }
 
     private String metricsClassName(AnalysisResult metricsStmt, boolean fullName) {
-        return (fullName ? DYNAMIC_METRICS_CLASS_PACKAGE : "") + metricsStmt.getMetricsName() + "Metrics";
+        return (fullName ? getDynamicMetricsPackage() : "") + metricsStmt.getMetricsName() + "Metrics";
     }
 
     private String metricsBuilderClassName(AnalysisResult metricsStmt, boolean fullName) {
-        return (fullName ? DYNAMIC_METRICS_BUILDER_CLASS_PACKAGE : "") + metricsStmt.getMetricsName() + "MetricsBuilder";
+        return (fullName ? getDynamicMetricsBuilderPackage() : "") + metricsStmt.getMetricsName() + "MetricsBuilder";
     }
 
     private String dispatcherClassName(String scopeName, boolean fullName) {
-        return (fullName ? DYNAMIC_DISPATCHER_CLASS_PACKAGE : "") + scopeName + "Dispatcher";
+        return (fullName ? getDynamicDispatcherPackage() : "") + scopeName + "Dispatcher";
     }
 
     private void buildDispatcherContext(AnalysisResult metricsStmt) {
@@ -437,10 +445,13 @@ public class OALRuntime implements OALEngine {
         DispatcherContext context = allDispatcherContext.getAllContext().get(sourceName);
         if (context == null) {
             context = new DispatcherContext();
+            context.setSourcePackage(getSourcePackage());
             context.setSource(sourceName);
             context.setPackageName(sourceName.toLowerCase());
             allDispatcherContext.getAllContext().put(sourceName, context);
         }
+        metricsStmt.setMetricsPackage(getDynamicMetricsPackage());
+        metricsStmt.setSourcePackage(getSourcePackage());
         context.getMetrics().add(metricsStmt);
     }
 

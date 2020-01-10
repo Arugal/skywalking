@@ -151,6 +151,12 @@ receiver-jvm:
   default:
 receiver-clr:
   default:
+receiver-browser:
+  default:
+    bufferPath: ${SW_RECEIVER_BUFFER_PATH:../browser-buffer/}  # Path to trace buffer files, suggest to use absolute path
+    bufferOffsetMaxFileSize: ${SW_RECEIVER_BUFFER_OFFSET_MAX_FILE_SIZE:100} # Unit is MB
+    bufferDataMaxFileSize: ${SW_RECEIVER_BUFFER_DATA_MAX_FILE_SIZE:500} # Unit is MB
+    bufferFileCleanWhenRestart: ${SW_RECEIVER_BUFFER_FILE_CLEAN_WHEN_RESTART:false}
 #receiver-so11y:
 #  default:
 service-mesh:
@@ -227,9 +233,6 @@ configuration:
 #    period: 1
 #    # Consul aclToken
 #    #aclToken: ${consul.aclToken}
-
-browser:
-  default:
 
 #exporter:
 #  grpc:

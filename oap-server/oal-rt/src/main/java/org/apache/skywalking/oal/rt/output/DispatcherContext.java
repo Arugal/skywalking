@@ -25,6 +25,7 @@ import org.apache.skywalking.oal.rt.parser.AnalysisResult;
 @Getter
 @Setter
 public class DispatcherContext {
+    private String sourcePackage;
     private String source;
     private String packageName;
     private List<AnalysisResult> metrics = new ArrayList<>();

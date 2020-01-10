@@ -32,7 +32,11 @@ public class AnalysisResult {
 
     private String packageName;
 
+    private String sourcePackage;
+
     private String sourceName;
+
+    private String metricsPackage;
 
     private int sourceScopeId;
 

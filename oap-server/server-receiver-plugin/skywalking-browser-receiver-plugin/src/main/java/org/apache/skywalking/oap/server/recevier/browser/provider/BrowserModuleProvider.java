@@ -27,6 +27,7 @@ import org.apache.skywalking.oap.server.recevier.browser.module.BrowserModule;
 import org.apache.skywalking.oap.server.recevier.browser.provider.handler.BrowserPerfServiceHandler;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfParse;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfParseListenerManager;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.perf.MultiScopesBrowserPerfListener;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfStandardizationWorker;
 import org.apache.skywalking.oap.server.telemetry.TelemetryModule;
 
@@ -62,6 +63,7 @@ public class BrowserModuleProvider extends ModuleProvider {
 
     public BrowserPerfParseListenerManager listenerManager() {
         BrowserPerfParseListenerManager listenerManager = new BrowserPerfParseListenerManager();
+        listenerManager.add(new MultiScopesBrowserPerfListener.Factory());
         return listenerManager;
     }
 

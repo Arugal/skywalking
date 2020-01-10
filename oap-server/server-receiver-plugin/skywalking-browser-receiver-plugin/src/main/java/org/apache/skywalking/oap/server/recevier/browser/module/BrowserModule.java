@@ -25,7 +25,7 @@ import org.apache.skywalking.oap.server.library.module.ModuleDefine;
  */
 public class BrowserModule extends ModuleDefine {
 
-    private static final String NAME = "browser";
+    private static final String NAME = "receiver-browser";
 
     public BrowserModule() {
         super(NAME);

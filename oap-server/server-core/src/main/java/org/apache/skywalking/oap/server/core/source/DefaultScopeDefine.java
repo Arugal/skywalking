@@ -71,6 +71,7 @@ public class DefaultScopeDefine {
     public static final int PROFILE_TASK_LOG = 27;
 
     // browser
+    public static final int BROWSER_SERVICE_PAGE_PATH = 40;
 
 
     /**
