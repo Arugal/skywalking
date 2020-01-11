@@ -21,6 +21,8 @@ package org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorat
 /**
  * @author zhangwei
  */
-public interface StandardBuilder {
+public interface StandardBuilder<T> {
     void toBuilder();
+
+    T build();
 }

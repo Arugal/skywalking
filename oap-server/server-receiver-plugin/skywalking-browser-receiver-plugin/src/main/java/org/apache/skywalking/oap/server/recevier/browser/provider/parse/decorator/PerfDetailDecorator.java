@@ -23,12 +23,14 @@ import org.apache.skywalking.apm.network.language.agent.PerfDetail;
 /**
  * @author zhangwei
  */
-public class PerfDetailDecorator implements StandardBuilder {
+public class PerfDetailDecorator implements StandardBuilder<PerfDetail> {
 
     private final PerfDetail perfDetail;
+    private final StandardBuilder standardBuilder;
 
-    public PerfDetailDecorator(PerfDetail perfDetail) {
+    public PerfDetailDecorator(PerfDetail perfDetail, StandardBuilder standardBuilder) {
         this.perfDetail = perfDetail;
+        this.standardBuilder = standardBuilder;
     }
 
     public int getRedirectTime() {
@@ -58,5 +60,10 @@ public class PerfDetailDecorator implements StandardBuilder {
     @Override
     public void toBuilder() {
 
+    }
+
+    @Override
+    public PerfDetail build() {
+        return perfDetail;
     }
 }

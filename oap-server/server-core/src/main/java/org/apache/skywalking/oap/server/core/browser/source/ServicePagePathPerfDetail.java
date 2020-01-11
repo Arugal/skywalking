@@ -25,19 +25,19 @@ import org.apache.skywalking.oap.server.core.source.ScopeDeclaration;
 import org.apache.skywalking.oap.server.core.source.ScopeDefaultColumn;
 import org.apache.skywalking.oap.server.core.source.Source;
 
-import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.BROWSER_SERVICE_PAGE_PATH;
-import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.ENDPOINT_CATALOG_NAME;
+import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_PAGE_PATH_PERF_DETAIL;
+import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_PAGE_PATH_CATALOG_NAME;
 
 /**
  * @author zhangwei
- *
  */
-@ScopeDeclaration(id = BROWSER_SERVICE_PAGE_PATH, name = "ServicePagePath", catalog = ENDPOINT_CATALOG_NAME)
+@ScopeDeclaration(id = SERVICE_PAGE_PATH_PERF_DETAIL, name = "ServicePagePathPerfDetail", catalog = SERVICE_PAGE_PATH_CATALOG_NAME)
 @ScopeDefaultColumn.VirtualColumnDefinition(fieldName = "entityId", columnName = "entity_id", isID = true, type = String.class)
-public class ServicePagePath extends Source {
+public class ServicePagePathPerfDetail extends Source {
+
     @Override
     public int scope() {
-        return BROWSER_SERVICE_PAGE_PATH;
+        return SERVICE_PAGE_PATH_PERF_DETAIL;
     }
 
     @Override
@@ -50,5 +50,11 @@ public class ServicePagePath extends Source {
     @Getter @Setter @ScopeDefaultColumn.DefinedByField(columnName = "service_id") private int serviceId;
     @Getter @Setter private String serviceName;
     @Getter @Setter private boolean status;
-    @Getter private final int value = 1;
+    @Getter private final int count = 1;
+    @Getter @Setter private int redirectTime;
+    @Getter @Setter private int dnsTime;
+    @Getter @Setter private int reqTime;
+    @Getter @Setter private int domAnalysisTime;
+    @Getter @Setter private int domReadyTime;
+    @Getter @Setter private int blankTime;
 }

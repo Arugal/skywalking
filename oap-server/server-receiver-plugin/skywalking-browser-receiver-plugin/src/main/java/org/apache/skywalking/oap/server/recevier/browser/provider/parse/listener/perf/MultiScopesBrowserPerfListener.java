@@ -54,23 +54,27 @@ public class MultiScopesBrowserPerfListener implements BrowserPerfListener {
 
     @Override
     public void build() {
-        sourceReceiver.receive(sourceBuilder.toServicePagePath());
+        sourceReceiver.receive(sourceBuilder.toServicePerfDetail());
+        sourceReceiver.receive(sourceBuilder.toServicePagePathPerfDetail());
+        sourceReceiver.receive(sourceBuilder.toServiceVersionPerfDetail());
+        sourceReceiver.receive(sourceBuilder.toServiceVersionPagePathPerfDetail());
     }
 
     @Override
     public void parse(BrowserPerfDataDecorator decorator, BrowserPerfCoreInfo coreInfo) {
-        sourceBuilder.setServiceId(decorator.getServiceId());
-        sourceBuilder.setServiceName(serviceInventoryCache.get(decorator.getServiceId()).getName());
-        sourceBuilder.setServiceVersionName(instanceInventoryCache.get(decorator.getServiceVersionId()).getName());
-        sourceBuilder.setServiceVersionId(decorator.getServiceVersionId());
-        sourceBuilder.setTime(decorator.getTime());
-        sourceBuilder.setPagePathId(decorator.getPagePathId());
-        sourceBuilder.setPagePath(decorator.getPagePath());
-        sourceBuilder.setError(decorator.isError());
+        sourceBuilder.setServiceId(coreInfo.getServiceId());
+        sourceBuilder.setServiceName(serviceInventoryCache.get(coreInfo.getServiceId()).getName());
+        sourceBuilder.setServiceVersionId(coreInfo.getServiceVersionId());
+        sourceBuilder.setServiceVersionName(instanceInventoryCache.get(coreInfo.getServiceVersionId()).getName());
+        sourceBuilder.setTime(coreInfo.getMinuteTimeBucket());
+        sourceBuilder.setPagePathId(coreInfo.getPagePathId());
+        sourceBuilder.setPagePath(coreInfo.getPagePath());
+        sourceBuilder.setError(coreInfo.isError());
 
         PerfDetailDecorator perfDetailDecorator = decorator.getPerfDetailDecorator();
         sourceBuilder.setRedirectTime(perfDetailDecorator.getRedirectTime());
         sourceBuilder.setDnsTime(perfDetailDecorator.getDnsTime());
+        sourceBuilder.setReqTime(perfDetailDecorator.getReqTime());
         sourceBuilder.setDomAnalysisTime(perfDetailDecorator.getDomAnalysisTime());
         sourceBuilder.setDomReadyTime(perfDetailDecorator.getDomReadyTime());
         sourceBuilder.setBlankTime(perfDetailDecorator.getBlankTime());

@@ -82,6 +82,12 @@ public class NotifyHandler implements MetricsNotify {
 
             endpointMetaInAlarm.setName(textName);
             metaInAlarm = endpointMetaInAlarm;
+        } else if (DefaultScopeDefine.inServicePageCatalog(scope)) {
+            // TODO handler service page path catalog
+            return;
+        } else if (DefaultScopeDefine.inServiceVersionCatalog(scope)) {
+            // TODO handler service version page path catalog
+            return;
         } else {
             return;
         }

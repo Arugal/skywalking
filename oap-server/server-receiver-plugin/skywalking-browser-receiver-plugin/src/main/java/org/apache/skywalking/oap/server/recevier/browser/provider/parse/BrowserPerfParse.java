@@ -101,7 +101,7 @@ public class BrowserPerfParse {
                 }
 
                 if (source.equals(BrowserPerfSource.Browser)) {
-                    writeToBufferFile(browserPerfData);
+                    writeToBufferFile(decorator);
                 } else {
                     BROWSER_PERF_BUFFER_FILE_RETRY.inc();
                 }
@@ -156,13 +156,16 @@ public class BrowserPerfParse {
         return exchanged;
     }
 
-    private void writeToBufferFile(BrowserPerfData browserPerf) {
+    private void writeToBufferFile(BrowserPerfDataDecorator decorator) {
         if (log.isDebugEnabled()) {
-            log.debug("push to segment buffer write worker, serviceId: {}, serviceVersionId: {}", browserPerf.getServiceId(), browserPerf.getServiceVersionId());
+            log.debug("push to segment buffer write worker, serviceId: {}, serviceVersionId: {}", decorator.getServiceId(), decorator.getServiceVersionId());
         }
 
         BrowserPerfStandardization standardization = new BrowserPerfStandardization();
-        standardization.setBrowserPerfData(browserPerf);
+        /**
+         * {@link BrowserPerfData#getTime()} It may be set by the backend.
+         */
+        standardization.setBrowserPerfData(decorator.build());
         standardizationWorker.in(standardization);
     }
 

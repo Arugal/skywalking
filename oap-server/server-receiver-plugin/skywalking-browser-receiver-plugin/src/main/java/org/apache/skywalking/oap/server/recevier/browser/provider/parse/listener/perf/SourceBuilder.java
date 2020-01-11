@@ -20,7 +20,7 @@ package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listene
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.skywalking.oap.server.core.browser.source.ServicePagePath;
+import org.apache.skywalking.oap.server.core.browser.source.*;
 
 /**
  * @author zhangwei
@@ -47,12 +47,68 @@ class SourceBuilder {
     private int domReadyTime;
     private int blankTime;
 
-    ServicePagePath toServicePagePath() {
-        ServicePagePath servicePagePath = new ServicePagePath();
-        servicePagePath.setId(pagePathId);
-        servicePagePath.setName(pagePath);
-        servicePagePath.setServiceId(serviceId);
-        servicePagePath.setServiceName(serviceName);
-        return servicePagePath;
+    ServicePerfDetail toServicePerfDetail() {
+        ServicePerfDetail servicePerfDetail = new ServicePerfDetail();
+        servicePerfDetail.setId(serviceId);
+        servicePerfDetail.setName(serviceVersionName);
+        servicePerfDetail.setStatus(isError);
+        servicePerfDetail.setRedirectTime(redirectTime);
+        servicePerfDetail.setDnsTime(dnsTime);
+        servicePerfDetail.setReqTime(reqTime);
+        servicePerfDetail.setDomAnalysisTime(domAnalysisTime);
+        servicePerfDetail.setDomReadyTime(domReadyTime);
+        servicePerfDetail.setBlankTime(blankTime);
+        return servicePerfDetail;
     }
+
+    ServicePagePathPerfDetail toServicePagePathPerfDetail() {
+        ServicePagePathPerfDetail servicePagePathPerfDetail = new ServicePagePathPerfDetail();
+        servicePagePathPerfDetail.setId(pagePathId);
+        servicePagePathPerfDetail.setName(pagePath);
+        servicePagePathPerfDetail.setServiceId(serviceId);
+        servicePagePathPerfDetail.setServiceName(serviceName);
+        servicePagePathPerfDetail.setStatus(isError);
+        servicePagePathPerfDetail.setRedirectTime(redirectTime);
+        servicePagePathPerfDetail.setDnsTime(dnsTime);
+        servicePagePathPerfDetail.setReqTime(reqTime);
+        servicePagePathPerfDetail.setDomAnalysisTime(domAnalysisTime);
+        servicePagePathPerfDetail.setDomReadyTime(domReadyTime);
+        servicePagePathPerfDetail.setBlankTime(blankTime);
+        return servicePagePathPerfDetail;
+    }
+
+    ServiceVersionPerfDetail toServiceVersionPerfDetail() {
+        ServiceVersionPerfDetail serviceVersionPerfDetail = new ServiceVersionPerfDetail();
+        serviceVersionPerfDetail.setId(serviceVersionId);
+        serviceVersionPerfDetail.setName(serviceVersionName);
+        serviceVersionPerfDetail.setServiceId(serviceId);
+        serviceVersionPerfDetail.setServiceName(serviceVersionName);
+        serviceVersionPerfDetail.setStatus(isError);
+        serviceVersionPerfDetail.setRedirectTime(redirectTime);
+        serviceVersionPerfDetail.setDnsTime(dnsTime);
+        serviceVersionPerfDetail.setReqTime(reqTime);
+        serviceVersionPerfDetail.setDomAnalysisTime(domAnalysisTime);
+        serviceVersionPerfDetail.setDomReadyTime(domReadyTime);
+        serviceVersionPerfDetail.setBlankTime(blankTime);
+        return serviceVersionPerfDetail;
+    }
+
+    ServiceVersionPagePathPerfDetail toServiceVersionPagePathPerfDetail() {
+        ServiceVersionPagePathPerfDetail serviceVersionPagePathPerfDetail = new ServiceVersionPagePathPerfDetail();
+        serviceVersionPagePathPerfDetail.setId(pagePathId);
+        serviceVersionPagePathPerfDetail.setName(pagePath);
+        serviceVersionPagePathPerfDetail.setServiceId(serviceId);
+        serviceVersionPagePathPerfDetail.setServiceName(serviceName);
+        serviceVersionPagePathPerfDetail.setServiceVersionId(serviceVersionId);
+        serviceVersionPagePathPerfDetail.setServiceVersionName(serviceVersionName);
+        serviceVersionPagePathPerfDetail.setStatus(isError);
+        serviceVersionPagePathPerfDetail.setRedirectTime(redirectTime);
+        serviceVersionPagePathPerfDetail.setDnsTime(dnsTime);
+        serviceVersionPagePathPerfDetail.setReqTime(reqTime);
+        serviceVersionPagePathPerfDetail.setDomAnalysisTime(domAnalysisTime);
+        serviceVersionPagePathPerfDetail.setDomReadyTime(domReadyTime);
+        serviceVersionPagePathPerfDetail.setBlankTime(blankTime);
+        return serviceVersionPagePathPerfDetail;
+    }
+
 }

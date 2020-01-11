@@ -23,7 +23,7 @@ import org.apache.skywalking.apm.network.language.agent.BrowserPerfData;
 /**
  * @author zhangwei
  */
-public class BrowserPerfDataDecorator implements StandardBuilder {
+public class BrowserPerfDataDecorator implements StandardBuilder<BrowserPerfData> {
 
     private boolean isOrigin = true;
     private final BrowserPerfData browserPerfData;
@@ -35,27 +35,47 @@ public class BrowserPerfDataDecorator implements StandardBuilder {
     public BrowserPerfDataDecorator(BrowserPerfData browserPerfData) {
         this.browserPerfData = browserPerfData;
         this.browserErrorLogDecorators = new BrowserErrorLogDecorator[browserPerfData.getLogsCount()];
-        this.perfDetailDecorator = new PerfDetailDecorator(browserPerfData.getPerfDetail());
+        this.perfDetailDecorator = new PerfDetailDecorator(browserPerfData.getPerfDetail(), this);
     }
 
     public int getServiceId() {
-        return browserPerfData.getServiceId();
+        if (isOrigin) {
+            return browserPerfData.getServiceId();
+        } else {
+            return browserPerfBuilder.getServiceId();
+        }
     }
 
     public int getServiceVersionId() {
-        return browserPerfData.getServiceVersionId();
+        if (isOrigin) {
+            return browserPerfData.getServiceVersionId();
+        } else {
+            return browserPerfBuilder.getServiceVersionId();
+        }
     }
 
     public long getTime() {
-        return browserPerfData.getTime();
+        if (isOrigin) {
+            return browserPerfData.getTime();
+        } else {
+            return browserPerfBuilder.getTime();
+        }
     }
 
     public String getPagePath() {
-        return browserPerfData.getPagePath();
+        if (isOrigin) {
+            return browserPerfData.getPagePath();
+        } else {
+            return browserPerfBuilder.getPagePath();
+        }
     }
 
     public int getPagePathId() {
-        return browserPerfData.getPagePathId();
+        if (isOrigin) {
+            return browserPerfData.getPagePathId();
+        } else {
+            return browserPerfBuilder.getPagePathId();
+        }
     }
 
     public PerfDetailDecorator getPerfDetailDecorator() {
@@ -67,15 +87,19 @@ public class BrowserPerfDataDecorator implements StandardBuilder {
     }
 
     public int getBrowserErrorLogCount() {
-        return browserPerfData.getLogsCount();
+        if (isOrigin) {
+            return browserPerfData.getLogsCount();
+        } else {
+            return browserPerfBuilder.getLogsCount();
+        }
     }
 
     public BrowserErrorLogDecorator getBrowserErrorLog(int index) {
         if (browserErrorLogDecorators[index] == null) {
             if (isOrigin) {
-                browserErrorLogDecorators[index] = new BrowserErrorLogDecorator(browserPerfData.getLogs(index));
+                browserErrorLogDecorators[index] = new BrowserErrorLogDecorator(browserPerfData.getLogs(index), this);
             } else {
-                browserErrorLogDecorators[index] = new BrowserErrorLogDecorator(browserPerfBuilder.getLogs(index));
+                browserErrorLogDecorators[index] = new BrowserErrorLogDecorator(browserPerfBuilder.getLogs(index), this);
             }
         }
         return browserErrorLogDecorators[index];
@@ -100,6 +124,21 @@ public class BrowserPerfDataDecorator implements StandardBuilder {
         if (isOrigin) {
             this.isOrigin = false;
             this.browserPerfBuilder = browserPerfData.toBuilder();
+        }
+    }
+
+    @Override
+    public BrowserPerfData build() {
+        if (isOrigin) {
+            return browserPerfData;
+        } else {
+            if (getBrowserErrorLogCount() > 0) {
+                for (int i = 0; i < getBrowserErrorLogCount(); i++) {
+                    browserPerfBuilder.setLogs(i, getBrowserErrorLog(i).build());
+                }
+            }
+            browserPerfBuilder.setPerfDetail(perfDetailDecorator.build());
+            return browserPerfBuilder.build();
         }
     }
 }

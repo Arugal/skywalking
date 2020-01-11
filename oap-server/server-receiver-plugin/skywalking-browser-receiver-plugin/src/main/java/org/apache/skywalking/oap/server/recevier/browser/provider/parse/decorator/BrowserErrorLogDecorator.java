@@ -23,47 +23,81 @@ import org.apache.skywalking.apm.network.language.agent.BrowserErrorLog;
 /**
  * @author zhangwei
  */
-public class BrowserErrorLogDecorator implements StandardBuilder {
+public class BrowserErrorLogDecorator implements StandardBuilder<BrowserErrorLog> {
 
     private boolean isOrigin = true;
+    private final StandardBuilder standardBuilder;
     private final BrowserErrorLog browserErrorLog;
     private BrowserErrorLog.Builder errorLogBuilder;
 
 
-    public BrowserErrorLogDecorator(BrowserErrorLog browserErrorLog) {
+    public BrowserErrorLogDecorator(BrowserErrorLog browserErrorLog, StandardBuilder standardBuilder) {
+        this.standardBuilder = standardBuilder;
         this.browserErrorLog = browserErrorLog;
     }
 
     public String getCatalog() {
-        return browserErrorLog.getCatalog();
+        if (isOrigin) {
+            return browserErrorLog.getCatalog();
+        } else {
+            return errorLogBuilder.getCatalog();
+        }
     }
 
     public String getGrade() {
-        return browserErrorLog.getGrade();
+        if (isOrigin) {
+            return browserErrorLog.getGrade();
+        } else {
+            return errorLogBuilder.getGrade();
+        }
     }
 
     public String getMessage() {
-        return browserErrorLog.getMessage();
+        if (isOrigin) {
+            return browserErrorLog.getMessage();
+        } else {
+            return errorLogBuilder.getMessage();
+        }
     }
 
     public int getLine() {
-        return browserErrorLog.getLine();
+        if (isOrigin) {
+            return browserErrorLog.getLine();
+        } else {
+            return errorLogBuilder.getLine();
+        }
     }
 
     public int getCol() {
-        return browserErrorLog.getCol();
+        if (isOrigin) {
+            return browserErrorLog.getCol();
+        } else {
+            return errorLogBuilder.getCol();
+        }
     }
 
     public String getStack() {
-        return browserErrorLog.getStack();
+        if (isOrigin) {
+            return browserErrorLog.getStack();
+        } else {
+            return errorLogBuilder.getStack();
+        }
     }
 
     public String getErrorUrl() {
-        return browserErrorLog.getErrorUrl();
+        if (isOrigin) {
+            return browserErrorLog.getErrorUrl();
+        } else {
+            return errorLogBuilder.getErrorUrl();
+        }
     }
 
     public long getTime() {
-        return browserErrorLog.getTime();
+        if (isOrigin) {
+            return browserErrorLog.getTime();
+        } else {
+            return errorLogBuilder.getTime();
+        }
     }
 
     public void setTime(long time) {
@@ -78,6 +112,16 @@ public class BrowserErrorLogDecorator implements StandardBuilder {
         if (isOrigin) {
             this.isOrigin = false;
             this.errorLogBuilder = browserErrorLog.toBuilder();
+            standardBuilder.toBuilder();
+        }
+    }
+
+    @Override
+    public BrowserErrorLog build() {
+        if (isOrigin) {
+            return browserErrorLog;
+        } else {
+            return errorLogBuilder.build();
         }
     }
 }
