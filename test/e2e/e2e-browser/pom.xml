@@ -29,6 +29,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>e2e-browser-es</module>
+        <module>e2e-browser-test-runner</module>
     </modules>
 
 

@@ -16,24 +16,23 @@
  *
  */
 
-package org.apache.skywalking.e2e.service.instance;
-
-import lombok.ToString;
-
-import java.util.List;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.errorlog;
 
 /**
- * @author kezhenxu94
+ * @author zhangwei
  */
-@ToString
-public class Instances {
-    private List<Instance> instances;
+public class BrowserErrorLogSampler {
+    private int sampleRate = 10000;
 
-    public List<Instance> getInstances() {
-        return instances;
+    public BrowserErrorLogSampler(int sampleRate) {
+        this.sampleRate = sampleRate;
     }
 
-    public void setInstances(List<Instance> instances) {
-        this.instances = instances;
+    public boolean shouldSample(String uniqueId) {
+        int sampleValue = uniqueId.hashCode() % 10000;
+        if (sampleValue < sampleRate) {
+            return true;
+        }
+        return false;
     }
 }

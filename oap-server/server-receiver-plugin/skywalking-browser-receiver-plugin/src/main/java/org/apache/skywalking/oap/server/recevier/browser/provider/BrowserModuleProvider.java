@@ -28,7 +28,8 @@ import org.apache.skywalking.oap.server.recevier.browser.provider.handler.Browse
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfDataParse;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfDataParseListenerManager;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.detail.MultiScopesPerfDetailDataListener;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.record.PerfDataListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.errorlog.BrowserErrorLogListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.inventory.BrowserInventoryListener;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfDataStandardizationWorker;
 import org.apache.skywalking.oap.server.telemetry.TelemetryModule;
 
@@ -65,7 +66,8 @@ public class BrowserModuleProvider extends ModuleProvider {
     public BrowserPerfDataParseListenerManager listenerManager() {
         BrowserPerfDataParseListenerManager listenerManager = new BrowserPerfDataParseListenerManager();
         listenerManager.add(new MultiScopesPerfDetailDataListener.Factory());
-        listenerManager.add(new PerfDataListener.Factory());
+        listenerManager.add(new BrowserErrorLogListener.Factory(moduleConfig.getSampleRate()));
+        listenerManager.add(new BrowserInventoryListener.Factory());
         return listenerManager;
     }
 

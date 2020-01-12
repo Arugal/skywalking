@@ -13,27 +13,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.skywalking.e2e.service.instance;
+package org.apache.skywalking.e2e;
 
-import lombok.ToString;
-
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.skywalking.e2e.browser.BrowserPerfITCase;
 
 /**
- * @author kezhenxu94
+ * @author zhangwei
  */
-@ToString
-public class Instances {
-    private List<Instance> instances;
+@Slf4j
+public class ESBrowserPerfITCase extends BrowserPerfITCase {
 
-    public List<Instance> getInstances() {
-        return instances;
-    }
-
-    public void setInstances(List<Instance> instances) {
-        this.instances = instances;
-    }
 }

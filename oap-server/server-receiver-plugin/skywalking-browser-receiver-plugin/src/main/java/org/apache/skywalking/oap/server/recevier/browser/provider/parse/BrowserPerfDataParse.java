@@ -138,7 +138,7 @@ public class BrowserPerfDataParse {
         }
 
         boolean exchanged = true;
-        if (!PagePathIdExchanger.getInstance(moduleManager).exchange(decorator, browserPerfDataCoreInfo.getServiceId())) {
+        if (!PagePathIdExchanger.getInstance(moduleManager).exchange(decorator, decorator.getServiceId())) {
             exchanged = false;
         }
 

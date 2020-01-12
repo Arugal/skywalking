@@ -15,25 +15,3 @@
  * limitations under the License.
  *
  */
-
-package org.apache.skywalking.e2e.service.instance;
-
-import lombok.ToString;
-
-import java.util.List;
-
-/**
- * @author kezhenxu94
- */
-@ToString
-public class Instances {
-    private List<Instance> instances;
-
-    public List<Instance> getInstances() {
-        return instances;
-    }
-
-    public void setInstances(List<Instance> instances) {
-        this.instances = instances;
-    }
-}

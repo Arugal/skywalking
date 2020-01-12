@@ -27,17 +27,108 @@
 
     <artifactId>e2e-browser-es</artifactId>
 
+    <properties>
+        <e2e.dist.directory>dist-for-browser-es</e2e.dist.directory>
+        <e2e.container.version>1.2</e2e.container.version>
+        <e2e.container.name.prefix>skywalking-e2e-container-${build.id}-browser-es</e2e.container.name.prefix>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.skywalking</groupId>
-            <artifactId>e2e-base</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.skywalking</groupId>
-            <artifactId>e2e-protocol</artifactId>
+            <artifactId>e2e-browser-test-runner</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <containerNamePattern>%a-%t-%i</containerNamePattern>
+                    <imagePullPolicy>Always</imagePullPolicy>
+                    <images>
+                        <image>
+                            <name>elastic/elasticsearch:${elasticsearch.version}</name>
+                            <alias>${e2e.container.name.prefix}-elasticsearch</alias>
+                            <run>
+                                <ports>
+                                    <port>es.port:9200</port>
+                                </ports>
+                                <wait>
+                                    <http>
+                                        <url>http://localhost:${es.port}</url>
+                                        <method>GET</method>
+                                        <status>200</status>
+                                    </http>
+                                    <time>120000</time>
+                                </wait>
+                                <env>
+                                    <discovery.type>single-node</discovery.type>
+                                </env>
+                            </run>
+                        </image>
+                        <image>
+                            <name>skyapm/e2e-container:${e2e.container.version}</name>
+                            <alias>${e2e.container.name.prefix}</alias>
+                            <run>
+                                <env>
+                                    <MODE>standalone</MODE>
+                                    <ES_VERSION>${elasticsearch.version}</ES_VERSION>
+                                    <SW_STORAGE_ES_CLUSTER_NODES>
+                                        ${e2e.container.name.prefix}-elasticsearch:9200
+                                    </SW_STORAGE_ES_CLUSTER_NODES>
+                                </env>
+                                <dependsOn>
+                                    <container>${e2e.container.name.prefix}-elasticsearch</container>
+                                </dependsOn>
+                                <ports>
+                                    <port>+webapp.host:webapp.port:8081</port>
+                                    <port>+oap.host:oap.port:11800</port>
+                                </ports>
+                                <links>
+                                    <link>${e2e.container.name.prefix}-elasticsearch</link>
+                                </links>
+                                <volumes>
+                                    <bind>
+                                        <volume>${sw.home}:/sw</volume>
+                                        <volume>${project.basedir}/src/docker/rc.d:/rc.d:ro</volume>
+                                        <volume>${project.basedir}/src/docker/es_storage.awk:/es_storage.awk</volume>
+                                        <volume>${project.basedir}/src/docker/official_analysis.oal:/official_analysis.oal</volume>
+                                    </bind>
+                                </volumes>
+                                <wait>
+                                    <log>SkyWalking e2e container is ready for tests</log>
+                                    <time>3000000</time>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+
+            <!-- set the system properties that can be used in test codes -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <sw.webapp.host>${webapp.host}</sw.webapp.host>
+                        <sw.webapp.port>${webapp.port}</sw.webapp.port>
+                        <oap.host>${oap.host}</oap.host>
+                        <oap.port>${oap.port}</oap.port>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
