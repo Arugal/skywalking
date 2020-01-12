@@ -16,29 +16,15 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener;
 
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.BrowserPerfListenerFactory;
-
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.skywalking.oap.server.library.module.ModuleManager;
+import org.apache.skywalking.oap.server.recevier.browser.provider.BrowserServiceModuleConfig;
 
 /**
  * @author zhangwei
  */
-public class BrowserPerfParseListenerManager {
+public interface BrowserPerfDataListenerFactory {
 
-    private List<BrowserPerfListenerFactory> browserPerfListenerFactories;
-
-    public BrowserPerfParseListenerManager() {
-        this.browserPerfListenerFactories = new LinkedList<>();
-    }
-
-    public void add(BrowserPerfListenerFactory browserPerfListenerFactory) {
-        this.browserPerfListenerFactories.add(browserPerfListenerFactory);
-    }
-
-    List<BrowserPerfListenerFactory> getBrowserPerfListenerFactories() {
-        return browserPerfListenerFactories;
-    }
+    BrowserPerfDataListener create(ModuleManager moduleManager, BrowserServiceModuleConfig moduleConfig);
 }

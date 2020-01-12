@@ -71,10 +71,11 @@ public class DefaultScopeDefine {
     public static final int PROFILE_TASK_LOG = 27;
 
     // browser
-    public static final int SERVICE_PERF_DETAIL = 40;
-    public static final int SERVICE_PAGE_PATH_PERF_DETAIL = 41;
-    public static final int SERVICE_VERSION_PERF_DETAIL = 42;
-    public static final int SERVICE_VERSION_PAGE_PATH_PERF_DETAIL = 43;
+    public static final int BROWSER_PERF_DATA = 40;
+    public static final int SERVICE_PERF_DETAIL = 41;
+    public static final int SERVICE_PAGE_PATH_PERF_DETAIL = 42;
+    public static final int SERVICE_VERSION_PERF_DETAIL = 43;
+    public static final int SERVICE_VERSION_PAGE_PATH_PERF_DETAIL = 44;
 
     /**
      * Catalog of scope, the metrics processor could use this to group all generated metrics by oal rt.

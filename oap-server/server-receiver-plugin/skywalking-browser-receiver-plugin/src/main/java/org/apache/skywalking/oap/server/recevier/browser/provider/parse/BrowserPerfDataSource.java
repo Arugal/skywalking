@@ -16,15 +16,11 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener;
-
-import org.apache.skywalking.oap.server.library.module.ModuleManager;
-import org.apache.skywalking.oap.server.recevier.browser.provider.BrowserServiceModuleConfig;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse;
 
 /**
  * @author zhangwei
  */
-public interface BrowserPerfListenerFactory {
-
-    BrowserPerfListener create(ModuleManager moduleManager, BrowserServiceModuleConfig moduleConfig);
+public enum BrowserPerfDataSource {
+    Browser, Buffer;
 }

@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.perf;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.detail;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +34,7 @@ class SourceBuilder {
     private int serviceVersionId;
     private String serviceVersionName;
     private long time;
+    private long minuteTimeBucket;
     private int pagePathId;
     private String pagePath;
 
@@ -58,6 +59,7 @@ class SourceBuilder {
         servicePerfDetail.setDomAnalysisTime(domAnalysisTime);
         servicePerfDetail.setDomReadyTime(domReadyTime);
         servicePerfDetail.setBlankTime(blankTime);
+        servicePerfDetail.setTimeBucket(minuteTimeBucket);
         return servicePerfDetail;
     }
 
@@ -74,6 +76,7 @@ class SourceBuilder {
         servicePagePathPerfDetail.setDomAnalysisTime(domAnalysisTime);
         servicePagePathPerfDetail.setDomReadyTime(domReadyTime);
         servicePagePathPerfDetail.setBlankTime(blankTime);
+        servicePagePathPerfDetail.setTimeBucket(minuteTimeBucket);
         return servicePagePathPerfDetail;
     }
 
@@ -90,6 +93,7 @@ class SourceBuilder {
         serviceVersionPerfDetail.setDomAnalysisTime(domAnalysisTime);
         serviceVersionPerfDetail.setDomReadyTime(domReadyTime);
         serviceVersionPerfDetail.setBlankTime(blankTime);
+        serviceVersionPerfDetail.setTimeBucket(minuteTimeBucket);
         return serviceVersionPerfDetail;
     }
 
@@ -108,6 +112,7 @@ class SourceBuilder {
         serviceVersionPagePathPerfDetail.setDomAnalysisTime(domAnalysisTime);
         serviceVersionPagePathPerfDetail.setDomReadyTime(domReadyTime);
         serviceVersionPagePathPerfDetail.setBlankTime(blankTime);
+        serviceVersionPagePathPerfDetail.setTimeBucket(minuteTimeBucket);
         return serviceVersionPagePathPerfDetail;
     }
 

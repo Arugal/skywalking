@@ -16,17 +16,25 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator;
 
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfCoreInfo;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfDataDecorator;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author zhangwei
  */
-public interface BrowserPerfListener {
+@Setter
+@Getter
+public class BrowserPerfDataCoreInfo {
 
-    void build();
-
-    void parse(BrowserPerfDataDecorator decorator, BrowserPerfCoreInfo coreInfo);
+    private String uniqueId;
+    private int serviceId;
+    private int serviceVersionId;
+    private int pagePathId;
+    private String pagePath;
+    private long time;
+    private long minuteTimeBucket;
+    private boolean isError;
+    private byte[] dataBinary;
 }

@@ -38,14 +38,14 @@ import java.util.List;
  * @author zhangwei
  */
 @Slf4j
-public class BrowserPerfStandardizationWorker extends AbstractWorker<BrowserPerfStandardization> {
+public class BrowserPerfDataStandardizationWorker extends AbstractWorker<BrowserPerfDataStandardization> {
 
-    private final DataCarrier<BrowserPerfStandardization> dataCarrier;
+    private final DataCarrier<BrowserPerfDataStandardization> dataCarrier;
     private CounterMetrics browserPerfDataBufferFileIn;
 
-    public BrowserPerfStandardizationWorker(ModuleDefineHolder moduleDefineHolder,
-                                            DataStreamReader.CallBack<BrowserPerfData> perfDataParse, String path, int offsetFileMaxSize,
-                                            int dataFileMaxSize, boolean cleanWhenRestart) throws IOException {
+    public BrowserPerfDataStandardizationWorker(ModuleDefineHolder moduleDefineHolder,
+                                                DataStreamReader.CallBack<BrowserPerfData> perfDataParse, String path, int offsetFileMaxSize,
+                                                int dataFileMaxSize, boolean cleanWhenRestart) throws IOException {
         super(moduleDefineHolder);
         BufferStream.Builder<BrowserPerfData> builder = new BufferStream.Builder<>(path);
         builder.cleanWhenRestart(cleanWhenRestart)
@@ -66,11 +66,11 @@ public class BrowserPerfStandardizationWorker extends AbstractWorker<BrowserPerf
     }
 
     @Override
-    public void in(BrowserPerfStandardization standardization) {
+    public void in(BrowserPerfDataStandardization standardization) {
         dataCarrier.produce(standardization);
     }
 
-    private class Consumer implements IConsumer<BrowserPerfStandardization> {
+    private class Consumer implements IConsumer<BrowserPerfDataStandardization> {
 
         private final BufferStream<BrowserPerfData> stream;
 
@@ -84,7 +84,7 @@ public class BrowserPerfStandardizationWorker extends AbstractWorker<BrowserPerf
         }
 
         @Override
-        public void consume(List<BrowserPerfStandardization> data) {
+        public void consume(List<BrowserPerfDataStandardization> data) {
             data.forEach(aData -> {
                 browserPerfDataBufferFileIn.inc();
                 stream.write(aData.getBrowserPerfData());
@@ -92,7 +92,7 @@ public class BrowserPerfStandardizationWorker extends AbstractWorker<BrowserPerf
         }
 
         @Override
-        public void onError(List<BrowserPerfStandardization> data, Throwable t) {
+        public void onError(List<BrowserPerfDataStandardization> data, Throwable t) {
             log.error(t.getMessage(), t);
         }
 

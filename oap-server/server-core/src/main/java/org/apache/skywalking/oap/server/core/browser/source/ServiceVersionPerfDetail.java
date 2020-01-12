@@ -41,7 +41,7 @@ public class ServiceVersionPerfDetail extends Source {
 
     @Override
     public String getEntityId() {
-        return serviceId + Const.ID_SPLIT + id;
+        return String.valueOf(id);
     }
 
     @Getter @Setter private int id;

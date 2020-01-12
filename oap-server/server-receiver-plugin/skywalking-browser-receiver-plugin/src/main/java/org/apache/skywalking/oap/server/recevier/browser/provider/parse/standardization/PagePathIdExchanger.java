@@ -30,19 +30,19 @@ import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorato
  * @author zhangwei
  */
 @Slf4j
-public class EndpointIdExchanger implements IdExchanger<BrowserPerfDataDecorator> {
+public class PagePathIdExchanger implements IdExchanger<BrowserPerfDataDecorator> {
 
-    private static EndpointIdExchanger EXCHANGER;
+    private static PagePathIdExchanger EXCHANGER;
     private final IEndpointInventoryRegister inventoryService;
 
-    public static EndpointIdExchanger getInstance(ModuleManager moduleManager) {
+    public static PagePathIdExchanger getInstance(ModuleManager moduleManager) {
         if (EXCHANGER == null) {
-            EXCHANGER = new EndpointIdExchanger(moduleManager);
+            EXCHANGER = new PagePathIdExchanger(moduleManager);
         }
         return EXCHANGER;
     }
 
-    private EndpointIdExchanger(ModuleManager moduleManager) {
+    private PagePathIdExchanger(ModuleManager moduleManager) {
         this.inventoryService = moduleManager.find(CoreModule.NAME).provider().getService(IEndpointInventoryRegister.class);
     }
 

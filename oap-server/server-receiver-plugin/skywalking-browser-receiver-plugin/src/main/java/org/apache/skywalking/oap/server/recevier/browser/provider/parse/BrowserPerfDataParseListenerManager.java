@@ -16,22 +16,29 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.BrowserPerfDataListenerFactory;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author zhangwei
  */
-@Setter
-@Getter
-public class BrowserPerfCoreInfo {
+public class BrowserPerfDataParseListenerManager {
 
-    private int serviceId;
-    private int serviceVersionId;
-    private int pagePathId;
-    private String pagePath;
-    private long minuteTimeBucket;
-    private boolean isError;
+    private List<BrowserPerfDataListenerFactory> browserPerfListenerFactories;
+
+    public BrowserPerfDataParseListenerManager() {
+        this.browserPerfListenerFactories = new LinkedList<>();
+    }
+
+    public void add(BrowserPerfDataListenerFactory browserPerfDataListenerFactory) {
+        this.browserPerfListenerFactories.add(browserPerfDataListenerFactory);
+    }
+
+    List<BrowserPerfDataListenerFactory> getBrowserPerfListenerFactories() {
+        return browserPerfListenerFactories;
+    }
 }

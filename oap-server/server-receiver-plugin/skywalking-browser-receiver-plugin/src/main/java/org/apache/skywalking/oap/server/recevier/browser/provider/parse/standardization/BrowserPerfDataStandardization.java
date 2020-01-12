@@ -27,7 +27,7 @@ import org.apache.skywalking.oap.server.core.analysis.data.QueueData;
 /**
  * @author zhangwei
  */
-public class BrowserPerfStandardization implements QueueData {
+public class BrowserPerfDataStandardization implements QueueData {
 
     private boolean endOfBatch = false;
 

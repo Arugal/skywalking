@@ -25,10 +25,11 @@ import org.apache.skywalking.oap.server.library.module.*;
 import org.apache.skywalking.oap.server.receiver.sharing.server.SharingServerModule;
 import org.apache.skywalking.oap.server.recevier.browser.module.BrowserModule;
 import org.apache.skywalking.oap.server.recevier.browser.provider.handler.BrowserPerfServiceHandler;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfParse;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfParseListenerManager;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.perf.MultiScopesBrowserPerfListener;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfStandardizationWorker;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfDataParse;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfDataParseListenerManager;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.detail.MultiScopesPerfDetailDataListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.record.PerfDataListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfDataStandardizationWorker;
 import org.apache.skywalking.oap.server.telemetry.TelemetryModule;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ import java.io.IOException;
 public class BrowserModuleProvider extends ModuleProvider {
 
     private final BrowserServiceModuleConfig moduleConfig = new BrowserServiceModuleConfig();
-    private BrowserPerfParse.Producer browserPerfProducer;
+    private BrowserPerfDataParse.Producer browserPerfProducer;
 
     @Override
     public String name() {
@@ -58,12 +59,13 @@ public class BrowserModuleProvider extends ModuleProvider {
 
     @Override
     public void prepare() throws ServiceNotProvidedException {
-        browserPerfProducer = new BrowserPerfParse.Producer(getManager(), listenerManager(), moduleConfig);
+        browserPerfProducer = new BrowserPerfDataParse.Producer(getManager(), listenerManager(), moduleConfig);
     }
 
-    public BrowserPerfParseListenerManager listenerManager() {
-        BrowserPerfParseListenerManager listenerManager = new BrowserPerfParseListenerManager();
-        listenerManager.add(new MultiScopesBrowserPerfListener.Factory());
+    public BrowserPerfDataParseListenerManager listenerManager() {
+        BrowserPerfDataParseListenerManager listenerManager = new BrowserPerfDataParseListenerManager();
+        listenerManager.add(new MultiScopesPerfDetailDataListener.Factory());
+        listenerManager.add(new PerfDataListener.Factory());
         return listenerManager;
     }
 
@@ -74,7 +76,7 @@ public class BrowserModuleProvider extends ModuleProvider {
         try {
             grpcHandlerRegister.addHandler(new BrowserPerfServiceHandler(browserPerfProducer, getManager()));
 
-            BrowserPerfStandardizationWorker standardizationWorker = new BrowserPerfStandardizationWorker(getManager(), browserPerfProducer,
+            BrowserPerfDataStandardizationWorker standardizationWorker = new BrowserPerfDataStandardizationWorker(getManager(), browserPerfProducer,
                     moduleConfig.getBufferPath(), moduleConfig.getBufferOffsetMaxFileSize(), moduleConfig.getBufferDataMaxFileSize(), moduleConfig.isBufferFileCleanWhenRestart());
             browserPerfProducer.setStandardizationWorker(standardizationWorker);
         } catch (IOException e) {

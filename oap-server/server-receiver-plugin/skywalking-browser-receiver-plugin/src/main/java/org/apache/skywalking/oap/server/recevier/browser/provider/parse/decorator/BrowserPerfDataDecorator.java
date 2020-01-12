@@ -38,6 +38,14 @@ public class BrowserPerfDataDecorator implements StandardBuilder<BrowserPerfData
         this.perfDetailDecorator = new PerfDetailDecorator(browserPerfData.getPerfDetail(), this);
     }
 
+    public String getUniqueId() {
+        if (isOrigin) {
+            return browserPerfData.getUniqueId();
+        } else {
+            return browserPerfBuilder.getUniqueId();
+        }
+    }
+
     public int getServiceId() {
         if (isOrigin) {
             return browserPerfData.getServiceId();
@@ -139,6 +147,14 @@ public class BrowserPerfDataDecorator implements StandardBuilder<BrowserPerfData
             }
             browserPerfBuilder.setPerfDetail(perfDetailDecorator.build());
             return browserPerfBuilder.build();
+        }
+    }
+
+    public byte[] toByteArray() {
+        if (isOrigin) {
+            return browserPerfData.toByteArray();
+        } else {
+            return browserPerfBuilder.build().toByteArray();
         }
     }
 }

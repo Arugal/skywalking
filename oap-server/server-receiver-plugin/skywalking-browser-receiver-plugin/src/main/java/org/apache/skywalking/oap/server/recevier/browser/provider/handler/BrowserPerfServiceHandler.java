@@ -25,7 +25,7 @@ import org.apache.skywalking.apm.network.language.agent.BrowserPerfData;
 import org.apache.skywalking.apm.network.language.agent.BrowserPerfServiceGrpc;
 import org.apache.skywalking.oap.server.library.module.ModuleManager;
 import org.apache.skywalking.oap.server.library.server.grpc.GRPCHandler;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfParse;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfDataParse;
 import org.apache.skywalking.oap.server.telemetry.TelemetryModule;
 import org.apache.skywalking.oap.server.telemetry.api.HistogramMetrics;
 import org.apache.skywalking.oap.server.telemetry.api.MetricsCreator;
@@ -37,10 +37,10 @@ import org.apache.skywalking.oap.server.telemetry.api.MetricsTag;
 @Slf4j
 public class BrowserPerfServiceHandler extends BrowserPerfServiceGrpc.BrowserPerfServiceImplBase implements GRPCHandler {
 
-    private final BrowserPerfParse.Producer browserPerfProducer;
+    private final BrowserPerfDataParse.Producer browserPerfProducer;
     private HistogramMetrics histogram;
 
-    public BrowserPerfServiceHandler(BrowserPerfParse.Producer browserPerfProducer, ModuleManager moduleManager) {
+    public BrowserPerfServiceHandler(BrowserPerfDataParse.Producer browserPerfProducer, ModuleManager moduleManager) {
         this.browserPerfProducer = browserPerfProducer;
         MetricsCreator metricsCreator = moduleManager.find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
         histogram = metricsCreator.createHistogramMetric("browser_perf_grpc_in_latency", "The process browser perf data",

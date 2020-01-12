@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.perf;
+package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.detail;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.skywalking.oap.server.core.CoreModule;
@@ -25,31 +25,29 @@ import org.apache.skywalking.oap.server.core.cache.ServiceInventoryCache;
 import org.apache.skywalking.oap.server.core.source.SourceReceiver;
 import org.apache.skywalking.oap.server.library.module.ModuleManager;
 import org.apache.skywalking.oap.server.recevier.browser.provider.BrowserServiceModuleConfig;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfCoreInfo;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfDataCoreInfo;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfDataDecorator;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.PerfDetailDecorator;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.BrowserPerfListener;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.BrowserPerfListenerFactory;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.BrowserPerfDataListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.BrowserPerfDataListenerFactory;
 
 /**
  * @author zhangwei
  */
 @Slf4j
-public class MultiScopesBrowserPerfListener implements BrowserPerfListener {
+public class MultiScopesPerfDetailDataListener implements BrowserPerfDataListener {
 
     private final SourceReceiver sourceReceiver;
     private final ServiceInventoryCache serviceInventoryCache;
     private final ServiceInstanceInventoryCache instanceInventoryCache;
-    private final BrowserServiceModuleConfig config;
     private final SourceBuilder sourceBuilder;
 
 
-    public MultiScopesBrowserPerfListener(ModuleManager moduleManager, BrowserServiceModuleConfig config) {
+    private MultiScopesPerfDetailDataListener(ModuleManager moduleManager) {
         this.sourceReceiver = moduleManager.find(CoreModule.NAME).provider().getService(SourceReceiver.class);
         this.serviceInventoryCache = moduleManager.find(CoreModule.NAME).provider().getService(ServiceInventoryCache.class);
         this.instanceInventoryCache = moduleManager.find(CoreModule.NAME).provider().getService(ServiceInstanceInventoryCache.class);
         this.sourceBuilder = new SourceBuilder();
-        this.config = config;
     }
 
     @Override
@@ -61,12 +59,13 @@ public class MultiScopesBrowserPerfListener implements BrowserPerfListener {
     }
 
     @Override
-    public void parse(BrowserPerfDataDecorator decorator, BrowserPerfCoreInfo coreInfo) {
+    public void parse(BrowserPerfDataDecorator decorator, BrowserPerfDataCoreInfo coreInfo) {
         sourceBuilder.setServiceId(coreInfo.getServiceId());
         sourceBuilder.setServiceName(serviceInventoryCache.get(coreInfo.getServiceId()).getName());
         sourceBuilder.setServiceVersionId(coreInfo.getServiceVersionId());
         sourceBuilder.setServiceVersionName(instanceInventoryCache.get(coreInfo.getServiceVersionId()).getName());
-        sourceBuilder.setTime(coreInfo.getMinuteTimeBucket());
+        sourceBuilder.setTime(coreInfo.getTime());
+        sourceBuilder.setMinuteTimeBucket(coreInfo.getMinuteTimeBucket());
         sourceBuilder.setPagePathId(coreInfo.getPagePathId());
         sourceBuilder.setPagePath(coreInfo.getPagePath());
         sourceBuilder.setError(coreInfo.isError());
@@ -80,11 +79,11 @@ public class MultiScopesBrowserPerfListener implements BrowserPerfListener {
         sourceBuilder.setBlankTime(perfDetailDecorator.getBlankTime());
     }
 
-    public static class Factory implements BrowserPerfListenerFactory {
+    public static class Factory implements BrowserPerfDataListenerFactory {
 
         @Override
-        public BrowserPerfListener create(ModuleManager moduleManager, BrowserServiceModuleConfig moduleConfig) {
-            return new MultiScopesBrowserPerfListener(moduleManager, moduleConfig);
+        public BrowserPerfDataListener create(ModuleManager moduleManager, BrowserServiceModuleConfig moduleConfig) {
+            return new MultiScopesPerfDetailDataListener(moduleManager);
         }
     }
 }

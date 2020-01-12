@@ -30,12 +30,12 @@ import org.apache.skywalking.oap.server.library.buffer.DataStreamReader;
 import org.apache.skywalking.oap.server.library.module.ModuleManager;
 import org.apache.skywalking.oap.server.recevier.browser.provider.BrowserServiceModuleConfig;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserErrorLogDecorator;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfCoreInfo;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfDataCoreInfo;
 import org.apache.skywalking.oap.server.recevier.browser.provider.parse.decorator.BrowserPerfDataDecorator;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.BrowserPerfListener;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfStandardization;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfStandardizationWorker;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.EndpointIdExchanger;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.BrowserPerfDataListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfDataStandardization;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfDataStandardizationWorker;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.PagePathIdExchanger;
 import org.apache.skywalking.oap.server.telemetry.TelemetryModule;
 import org.apache.skywalking.oap.server.telemetry.api.CounterMetrics;
 import org.apache.skywalking.oap.server.telemetry.api.MetricsCreator;
@@ -48,25 +48,25 @@ import java.util.List;
  * @author zhangwei
  */
 @Slf4j
-public class BrowserPerfParse {
+public class BrowserPerfDataParse {
 
     private final ModuleManager moduleManager;
-    private final BrowserPerfParseListenerManager listenerManager;
+    private final BrowserPerfDataParseListenerManager listenerManager;
     private final BrowserServiceModuleConfig config;
-    private final List<BrowserPerfListener> browserPerfListeners;
+    private final List<BrowserPerfDataListener> browserPerfDataListeners;
     private final ServiceInstanceInventoryCache serviceInstanceInventoryCache;
-    private final BrowserPerfCoreInfo browserPerfCoreInfo;
-    @Setter private BrowserPerfStandardizationWorker standardizationWorker;
+    private final BrowserPerfDataCoreInfo browserPerfDataCoreInfo;
+    @Setter private BrowserPerfDataStandardizationWorker standardizationWorker;
     private volatile static CounterMetrics BROWSER_PERF_BUFFER_FILE_RETRY;
     private volatile static CounterMetrics BROWSER_PERF_BUFFER_FILE_OUT;
     private volatile static CounterMetrics BROWSER_PERF_PARSE_ERROR;
 
-    public BrowserPerfParse(ModuleManager moduleManager, BrowserPerfParseListenerManager listenerManager, BrowserServiceModuleConfig config) {
+    public BrowserPerfDataParse(ModuleManager moduleManager, BrowserPerfDataParseListenerManager listenerManager, BrowserServiceModuleConfig config) {
         this.moduleManager = moduleManager;
         this.listenerManager = listenerManager;
         this.config = config;
-        this.browserPerfListeners = new LinkedList<>();
-        this.browserPerfCoreInfo = new BrowserPerfCoreInfo();
+        this.browserPerfDataListeners = new LinkedList<>();
+        this.browserPerfDataCoreInfo = new BrowserPerfDataCoreInfo();
 
         if (BROWSER_PERF_BUFFER_FILE_RETRY == null) {
             MetricsCreator metricsCreator = moduleManager.find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
@@ -81,7 +81,7 @@ public class BrowserPerfParse {
         this.serviceInstanceInventoryCache = moduleManager.find(CoreModule.NAME).provider().getService(ServiceInstanceInventoryCache.class);
     }
 
-    public boolean parse(BufferData<BrowserPerfData> bufferData, BrowserPerfSource source) {
+    public boolean parse(BufferData<BrowserPerfData> bufferData, BrowserPerfDataSource source) {
         createBrowserPerfListeners();
 
         try {
@@ -100,7 +100,7 @@ public class BrowserPerfParse {
                             decorator.getServiceId(), decorator.getPagePath());
                 }
 
-                if (source.equals(BrowserPerfSource.Browser)) {
+                if (source.equals(BrowserPerfDataSource.Browser)) {
                     writeToBufferFile(decorator);
                 } else {
                     BROWSER_PERF_BUFFER_FILE_RETRY.inc();
@@ -138,19 +138,21 @@ public class BrowserPerfParse {
         }
 
         boolean exchanged = true;
-        if (!EndpointIdExchanger.getInstance(moduleManager).exchange(decorator, browserPerfCoreInfo.getServiceId())) {
+        if (!PagePathIdExchanger.getInstance(moduleManager).exchange(decorator, browserPerfDataCoreInfo.getServiceId())) {
             exchanged = false;
         }
 
         if (exchanged) {
-            browserPerfCoreInfo.setServiceId(decorator.getServiceId());
-            browserPerfCoreInfo.setServiceVersionId(decorator.getServiceVersionId());
-            browserPerfCoreInfo.setPagePathId(decorator.getPagePathId());
-            browserPerfCoreInfo.setPagePath(decorator.getPagePath());
-            browserPerfCoreInfo.setError(decorator.isError());
+            browserPerfDataCoreInfo.setUniqueId(decorator.getUniqueId());
+            browserPerfDataCoreInfo.setServiceId(decorator.getServiceId());
+            browserPerfDataCoreInfo.setServiceVersionId(decorator.getServiceVersionId());
+            browserPerfDataCoreInfo.setPagePathId(decorator.getPagePathId());
+            browserPerfDataCoreInfo.setPagePath(decorator.getPagePath());
+            browserPerfDataCoreInfo.setError(decorator.isError());
+            browserPerfDataCoreInfo.setDataBinary(decorator.toByteArray());
             long minuteTimeBucket = TimeBucket.getMinuteTimeBucket(decorator.getTime());
-            browserPerfCoreInfo.setMinuteTimeBucket(minuteTimeBucket);
-
+            browserPerfDataCoreInfo.setTime(decorator.getTime());
+            browserPerfDataCoreInfo.setMinuteTimeBucket(minuteTimeBucket);
             notifyParseListener(decorator);
         }
         return exchanged;
@@ -161,7 +163,7 @@ public class BrowserPerfParse {
             log.debug("push to segment buffer write worker, serviceId: {}, serviceVersionId: {}", decorator.getServiceId(), decorator.getServiceVersionId());
         }
 
-        BrowserPerfStandardization standardization = new BrowserPerfStandardization();
+        BrowserPerfDataStandardization standardization = new BrowserPerfDataStandardization();
         /**
          * {@link BrowserPerfData#getTime()} It may be set by the backend.
          */
@@ -170,41 +172,41 @@ public class BrowserPerfParse {
     }
 
     private void notifyListenerToBuild() {
-        browserPerfListeners.forEach(BrowserPerfListener::build);
+        browserPerfDataListeners.forEach(BrowserPerfDataListener::build);
     }
 
     private void notifyParseListener(BrowserPerfDataDecorator decorator) {
-        browserPerfListeners.forEach(listener -> listener.parse(decorator, browserPerfCoreInfo));
+        browserPerfDataListeners.forEach(listener -> listener.parse(decorator, browserPerfDataCoreInfo));
     }
 
     private void createBrowserPerfListeners() {
-        listenerManager.getBrowserPerfListenerFactories().forEach(listenerFactory -> browserPerfListeners.add(listenerFactory.create(moduleManager, config)));
+        listenerManager.getBrowserPerfListenerFactories().forEach(listenerFactory -> browserPerfDataListeners.add(listenerFactory.create(moduleManager, config)));
     }
 
     public static class Producer implements DataStreamReader.CallBack<BrowserPerfData> {
 
         @Setter
-        private BrowserPerfStandardizationWorker standardizationWorker;
+        private BrowserPerfDataStandardizationWorker standardizationWorker;
         private final ModuleManager moduleManager;
-        private final BrowserPerfParseListenerManager listenerManager;
+        private final BrowserPerfDataParseListenerManager listenerManager;
         private final BrowserServiceModuleConfig config;
 
-        public Producer(ModuleManager moduleManager, BrowserPerfParseListenerManager listenerManager, BrowserServiceModuleConfig config) {
+        public Producer(ModuleManager moduleManager, BrowserPerfDataParseListenerManager listenerManager, BrowserServiceModuleConfig config) {
             this.moduleManager = moduleManager;
             this.listenerManager = listenerManager;
             this.config = config;
         }
 
         public void send(BrowserPerfData perf) {
-            BrowserPerfParse perfParse = new BrowserPerfParse(moduleManager, listenerManager, config);
+            BrowserPerfDataParse perfParse = new BrowserPerfDataParse(moduleManager, listenerManager, config);
             perfParse.setStandardizationWorker(standardizationWorker);
-            perfParse.parse(new BufferData<>(perf), BrowserPerfSource.Browser);
+            perfParse.parse(new BufferData<>(perf), BrowserPerfDataSource.Browser);
         }
 
         @Override
         public boolean call(BufferData<BrowserPerfData> bufferData) {
-            BrowserPerfParse perfParse = new BrowserPerfParse(moduleManager, listenerManager, config);
-            boolean parseResult = perfParse.parse(bufferData, BrowserPerfSource.Buffer);
+            BrowserPerfDataParse perfParse = new BrowserPerfDataParse(moduleManager, listenerManager, config);
+            boolean parseResult = perfParse.parse(bufferData, BrowserPerfDataSource.Buffer);
             if (parseResult) {
                 BROWSER_PERF_BUFFER_FILE_OUT.inc();
             }
