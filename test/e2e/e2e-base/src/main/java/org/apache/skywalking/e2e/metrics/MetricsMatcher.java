@@ -18,12 +18,13 @@
 
 package org.apache.skywalking.e2e.metrics;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.List;
 import org.apache.skywalking.e2e.SimpleQueryClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
 
 /**
  * @author zhangwei
@@ -38,7 +39,12 @@ public class MetricsMatcher {
     }
 
     public static void verifyMetrics(SimpleQueryClient queryClient, String metricName, String id,
-        final LocalDateTime minutesAgo, long retryInterval, Runnable generateTraffic) throws Exception {
+                                     final LocalDateTime minutesAgo, long retryInterval, Runnable generateTraffic) throws Exception {
+        verifyMetrics(queryClient, metricName, id, minutesAgo, LocalDateTime.now(ZoneOffset.UTC).plusMinutes(1), retryInterval, generateTraffic);
+    }
+
+    public static void verifyMetrics(SimpleQueryClient queryClient, String metricName, String id,
+        final LocalDateTime minutesAgo, final LocalDateTime now,  long retryInterval, Runnable generateTraffic) throws Exception {
         boolean valid = false;
         while (!valid) {
             Metrics metrics = queryClient.metrics(
@@ -46,7 +52,7 @@ public class MetricsMatcher {
                     .stepByMinute()
                     .metricsName(metricName)
                     .start(minutesAgo)
-                    .end(LocalDateTime.now(ZoneOffset.UTC).plusMinutes(1))
+                    .end(now)
                     .id(id)
             );
             LOGGER.info("{}: {}", metricName, metrics);
@@ -69,7 +75,12 @@ public class MetricsMatcher {
     }
 
     public static void verifyPercentileMetrics(SimpleQueryClient queryClient, String metricName, String id,
-        final LocalDateTime minutesAgo, long retryInterval, Runnable generateTraffic) throws Exception {
+                                               final LocalDateTime minutesAgo,  long retryInterval, Runnable generateTraffic) throws Exception {
+        verifyPercentileMetrics(queryClient, metricName, id, minutesAgo, LocalDateTime.now(ZoneOffset.UTC).plusMinutes(1), retryInterval, generateTraffic);
+    }
+
+    public static void verifyPercentileMetrics(SimpleQueryClient queryClient, String metricName, String id,
+        final LocalDateTime minutesAgo, final LocalDateTime now, long retryInterval, Runnable generateTraffic) throws Exception {
         boolean valid = false;
         while (!valid) {
             List<Metrics> metricsArray = queryClient.multipleLinearMetrics(
@@ -77,7 +88,7 @@ public class MetricsMatcher {
                     .stepByMinute()
                     .metricsName(metricName)
                     .start(minutesAgo)
-                    .end(LocalDateTime.now(ZoneOffset.UTC).plusMinutes(1))
+                    .end(now)
                     .id(id),
                 "5"
             );

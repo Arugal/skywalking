@@ -25,7 +25,8 @@ import org.apache.skywalking.oap.server.core.source.ScopeDeclaration;
 import org.apache.skywalking.oap.server.core.source.ScopeDefaultColumn;
 import org.apache.skywalking.oap.server.core.source.Source;
 
-import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.*;
+import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_VERSION_PAGE_PATH_CATALOG_NAME;
+import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_VERSION_PAGE_PATH_PERF_DETAIL;
 
 /**
  * @author zhangwei
@@ -40,7 +41,7 @@ public class ServiceVersionPagePathPerfDetail extends Source {
 
     @Override
     public String getEntityId() {
-        return serviceId + Const.ID_SPLIT + serviceVersionId + Const.ID_SPLIT + id;
+        return serviceVersionId + Const.ID_SPLIT + id;
     }
 
     @Getter @Setter private int id;
