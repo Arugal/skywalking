@@ -24,6 +24,6 @@ import org.apache.skywalking.e2e.browser.BrowserPerfITCase;
  * @author zhangwei
  */
 @Slf4j
-public class ESBrowserPerfITCase extends BrowserPerfITCase {
+public class ESWithBrowserPerfITCase extends BrowserPerfITCase {
 
 }

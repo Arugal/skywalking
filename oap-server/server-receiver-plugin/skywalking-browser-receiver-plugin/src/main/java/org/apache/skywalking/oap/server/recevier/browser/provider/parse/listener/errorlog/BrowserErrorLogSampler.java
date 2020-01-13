@@ -28,11 +28,7 @@ public class BrowserErrorLogSampler {
         this.sampleRate = sampleRate;
     }
 
-    public boolean shouldSample(String uniqueId) {
-        int sampleValue = uniqueId.hashCode() % 10000;
-        if (sampleValue < sampleRate) {
-            return true;
-        }
-        return false;
+    public boolean shouldSample(int hashCode) {
+        return hashCode % 10000 < sampleRate;
     }
 }

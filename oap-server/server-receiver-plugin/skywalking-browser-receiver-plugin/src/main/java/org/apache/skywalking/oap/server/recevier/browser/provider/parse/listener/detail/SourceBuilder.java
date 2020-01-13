@@ -52,7 +52,7 @@ class SourceBuilder {
         ServicePerfDetail servicePerfDetail = new ServicePerfDetail();
         servicePerfDetail.setId(serviceId);
         servicePerfDetail.setName(serviceVersionName);
-        servicePerfDetail.setStatus(isError);
+        servicePerfDetail.setStatus(!isError);
         servicePerfDetail.setRedirectTime(redirectTime);
         servicePerfDetail.setDnsTime(dnsTime);
         servicePerfDetail.setReqTime(reqTime);
@@ -69,7 +69,7 @@ class SourceBuilder {
         servicePagePathPerfDetail.setName(pagePath);
         servicePagePathPerfDetail.setServiceId(serviceId);
         servicePagePathPerfDetail.setServiceName(serviceName);
-        servicePagePathPerfDetail.setStatus(isError);
+        servicePagePathPerfDetail.setStatus(!isError);
         servicePagePathPerfDetail.setRedirectTime(redirectTime);
         servicePagePathPerfDetail.setDnsTime(dnsTime);
         servicePagePathPerfDetail.setReqTime(reqTime);
@@ -86,7 +86,7 @@ class SourceBuilder {
         serviceVersionPerfDetail.setName(serviceVersionName);
         serviceVersionPerfDetail.setServiceId(serviceId);
         serviceVersionPerfDetail.setServiceName(serviceVersionName);
-        serviceVersionPerfDetail.setStatus(isError);
+        serviceVersionPerfDetail.setStatus(!isError);
         serviceVersionPerfDetail.setRedirectTime(redirectTime);
         serviceVersionPerfDetail.setDnsTime(dnsTime);
         serviceVersionPerfDetail.setReqTime(reqTime);
@@ -105,7 +105,7 @@ class SourceBuilder {
         serviceVersionPagePathPerfDetail.setServiceName(serviceName);
         serviceVersionPagePathPerfDetail.setServiceVersionId(serviceVersionId);
         serviceVersionPagePathPerfDetail.setServiceVersionName(serviceVersionName);
-        serviceVersionPagePathPerfDetail.setStatus(isError);
+        serviceVersionPagePathPerfDetail.setStatus(!isError);
         serviceVersionPagePathPerfDetail.setRedirectTime(redirectTime);
         serviceVersionPagePathPerfDetail.setDnsTime(dnsTime);
         serviceVersionPagePathPerfDetail.setReqTime(reqTime);

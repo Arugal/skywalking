@@ -68,7 +68,7 @@ public class BrowserMetricsQuery extends MetricsQuery {
 
     public static final String[] ALL_SERVICE_PAGE_METRICS = {
             SERVICE_PAGE_PV,
-//            SERVICE_PAGE_ERROR_RATE,
+            SERVICE_PAGE_ERROR_RATE,
             SERVICE_PAGE_REDIRECT_AVG,
             SERVICE_PAGE_DNS_AVG,
             SERVICE_PAGE_REQ_AVG,
@@ -137,7 +137,7 @@ public class BrowserMetricsQuery extends MetricsQuery {
 
     public static final String[] ALL_SERVICE_VERSION_PAGE_METRICS = {
             SERVICE_VERSION_PAGE_PV,
-//            SERVICE_VERSION_PAGE_ERROR_RATE,
+            SERVICE_VERSION_PAGE_ERROR_RATE,
             SERVICE_VERSION_PAGE_REDIRECT_AVG,
             SERVICE_VERSION_PAGE_DNS_AVG,
             SERVICE_VERSION_PAGE_REQ_AVG,

@@ -78,7 +78,7 @@ public class BrowserErrorLogListener implements BrowserPerfDataListener {
             return;
         }
         if (sampleStatus.equals(SAMPLE_STATUS.UNKNOWN)) {
-            if (sampler.shouldSample(uniqueId)) {
+            if (sampler.shouldSample(uniqueId.hashCode())) {
                 sampleStatus = SAMPLE_STATUS.SAMPLED;
             } else {
                 sampleStatus = SAMPLE_STATUS.IGNORE;

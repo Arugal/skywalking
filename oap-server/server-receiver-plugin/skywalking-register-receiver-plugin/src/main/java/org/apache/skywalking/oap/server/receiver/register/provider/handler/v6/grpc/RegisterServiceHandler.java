@@ -24,7 +24,17 @@ import org.apache.skywalking.apm.network.common.Commands;
 import org.apache.skywalking.apm.network.common.KeyIntValuePair;
 import org.apache.skywalking.apm.network.common.KeyStringValuePair;
 import org.apache.skywalking.apm.network.common.ServiceType;
-import org.apache.skywalking.apm.network.register.v2.*;
+import org.apache.skywalking.apm.network.register.v2.EndpointMapping;
+import org.apache.skywalking.apm.network.register.v2.EndpointMappingElement;
+import org.apache.skywalking.apm.network.register.v2.Endpoints;
+import org.apache.skywalking.apm.network.register.v2.NetAddressMapping;
+import org.apache.skywalking.apm.network.register.v2.NetAddresses;
+import org.apache.skywalking.apm.network.register.v2.RegisterGrpc;
+import org.apache.skywalking.apm.network.register.v2.ServiceAndNetworkAddressMappings;
+import org.apache.skywalking.apm.network.register.v2.ServiceInstanceRegisterMapping;
+import org.apache.skywalking.apm.network.register.v2.ServiceInstances;
+import org.apache.skywalking.apm.network.register.v2.ServiceRegisterMapping;
+import org.apache.skywalking.apm.network.register.v2.Services;
 import org.apache.skywalking.apm.util.StringUtil;
 import org.apache.skywalking.oap.server.core.Const;
 import org.apache.skywalking.oap.server.core.CoreModule;
@@ -46,7 +56,11 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.skywalking.oap.server.core.register.ServiceInstanceInventory.PropertyUtil.*;
+import static org.apache.skywalking.oap.server.core.register.ServiceInstanceInventory.PropertyUtil.HOST_NAME;
+import static org.apache.skywalking.oap.server.core.register.ServiceInstanceInventory.PropertyUtil.IPV4S;
+import static org.apache.skywalking.oap.server.core.register.ServiceInstanceInventory.PropertyUtil.LANGUAGE;
+import static org.apache.skywalking.oap.server.core.register.ServiceInstanceInventory.PropertyUtil.OS_NAME;
+import static org.apache.skywalking.oap.server.core.register.ServiceInstanceInventory.PropertyUtil.PROCESS_NO;
 
 /**
  * @author wusheng
