@@ -15,16 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo 'starting OAP server...' \
-    SW_BROWSER_RECEIVER_BUFFER_PATH=/tmp/oap/browser_buffer \
-    start_oap 'init'
+echo 'starting OAP server...' && start_oap 'init'
 
-echo 'starting Web app...' \
-    && start_webapp '0.0.0.0' 8081
+echo 'starting Web app...' && start_webapp '0.0.0.0' 8081
+
+
+if [[ $? -ne 0 ]]; then
+    echo "instrumented service 0 failed to start in 30 * 10 seconds: "
+    cat ${SERVICE_LOG}/*
+    exit 1
+fi
 
 echo "SkyWalking e2e container is ready for tests"
 
 tail -f ${OAP_LOG_DIR}/* \
         ${WEBAPP_LOG_DIR}/* \
-        ${ES_HOME}/logs/elasticsearch.log \
-        ${ES_HOME}/logs/stdout.log
+        ${SERVICE_LOG}/*

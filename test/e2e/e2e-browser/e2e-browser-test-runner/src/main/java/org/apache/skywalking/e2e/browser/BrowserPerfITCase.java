@@ -51,10 +51,13 @@ import org.apache.skywalking.e2e.service.instance.InstancesQuery;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.annotation.DirtiesContext;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -99,12 +102,13 @@ public abstract class BrowserPerfITCase {
     @Before
     public void setUp() {
         final String swWebappHost = System.getProperty("sw.webapp.host", "127.0.0.1");
-        final String swWebappPort = System.getProperty("sw.webapp.host", "12800");
+        final String swWebappPort = System.getProperty("sw.webapp.port", "12800");
         final String oapPort = System.getProperty("oap.port", "11800");
+        final String oapHost = System.getProperty("oap.host", "127.0.0.1");
         queryClient = new BrowserQueryClient(swWebappHost, swWebappPort);
 
         final ManagedChannelBuilder builder =
-                NettyChannelBuilder.forAddress("127.0.0.1", Integer.parseInt(oapPort))
+                NettyChannelBuilder.forAddress(oapHost, Integer.parseInt(oapPort))
                         .nameResolverFactory(new DnsNameResolverProvider())
                         .maxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
                         .usePlaintext();
@@ -114,9 +118,10 @@ public abstract class BrowserPerfITCase {
         browserPerfServiceStub = BrowserPerfServiceGrpc.newStub(channel);
     }
 
-    @Test(timeout = 120000)
+    @Test(timeout = 1200000)
+    @DirtiesContext
     public void verify() throws Exception {
-        final LocalDateTime minutesAgo = LocalDateTime.now();
+        final LocalDateTime minutesAgo = LocalDateTime.now(ZoneOffset.UTC);
         generateTraffic();
 
         doRetryableVerification(() -> {
@@ -130,7 +135,7 @@ public abstract class BrowserPerfITCase {
     }
 
     private void verifyServices(LocalDateTime minutesAgo) throws Exception {
-        final LocalDateTime now = LocalDateTime.now().plusMinutes(1);
+        final LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC).plusMinutes(1);
 
         final List<org.apache.skywalking.e2e.service.Service> services = queryClient.browserServices(new ServicesQuery().start(minutesAgo).end(now));
         log.info("services: {}", services);
