@@ -24,6 +24,7 @@ if test "${MODE}" = "cluster"; then
     cd ${SW_HOME}/config \
         && gawk -f /clusterize.awk application.yml > clusterized_app.yml \
         && mv clusterized_app.yml application.yml \
+        && echo '//' > browser_analysis.oal \
         && echo '
 gateways:
   - name: proxy0
