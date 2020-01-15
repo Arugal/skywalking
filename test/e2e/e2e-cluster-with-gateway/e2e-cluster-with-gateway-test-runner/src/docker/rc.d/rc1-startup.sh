@@ -50,7 +50,7 @@ if test "${MODE}" = "cluster"; then
         SW_STORAGE_ES_FLUSH_INTERVAL=1 \
         SW_RECEIVER_BUFFER_PATH=/tmp/oap/trace_buffer2 \
         SW_SERVICE_MESH_BUFFER_PATH=/tmp/oap/mesh_buffer2 \
-        SW_RECEIVER_BROWSER_BUFFER_PATH=/tmp/oap/browser_buffer1 \
+        SW_RECEIVER_BROWSER_BUFFER_PATH=/tmp/oap/browser_buffer2 \
         start_oap 'no-init'
 fi
 
