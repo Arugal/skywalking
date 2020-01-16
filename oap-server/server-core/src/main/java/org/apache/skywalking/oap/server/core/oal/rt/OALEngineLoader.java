@@ -18,25 +18,18 @@
 
 package org.apache.skywalking.oap.server.core.oal.rt;
 
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ServiceLoader;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Load the OAL Engine runtime, because runtime module depends on core, so we have to use {@link ServiceLoader} to locate it.
+ * Load the OAL Engine runtime, because runtime module depends on core, so we have to use class::forname to locate it.
  *
  * @author wusheng
- * @author zhangwei
  */
-@Slf4j
 public class OALEngineLoader {
     private static volatile OALEngine ENGINE = null;
     private static ReentrantLock INIT_LOCK = new ReentrantLock();
 
-    public static OALEngine get() {
+    public static OALEngine get() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         if (ENGINE == null) {
             INIT_LOCK.lock();
             try {
@@ -50,13 +43,8 @@ public class OALEngineLoader {
         return ENGINE;
     }
 
-    private static void init() {
-        ServiceLoader<OALEngine> serviceLoader = ServiceLoader.load(OALEngine.class);
-        List<OALEngine> oalEngines = new LinkedList<>();
-        serviceLoader.forEach(oalEngines::add);
-        if (log.isWarnEnabled() && oalEngines.isEmpty()) {
-            log.warn("There is no OAL Engine in the running environment!");
-        }
-        ENGINE = new MultiOALEngine(oalEngines);
+    private static void init() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        Class<?> engineRTClass = Class.forName("org.apache.skywalking.oal.rt.OALRuntime");
+        ENGINE = (OALEngine)engineRTClass.newInstance();
     }
 }

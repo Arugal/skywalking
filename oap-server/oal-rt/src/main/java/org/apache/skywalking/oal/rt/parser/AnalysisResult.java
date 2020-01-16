@@ -36,8 +36,6 @@ public class AnalysisResult {
 
     private String sourceName;
 
-    private String metricsPackage;
-
     private int sourceScopeId;
 
     private String sourceAttribute;
