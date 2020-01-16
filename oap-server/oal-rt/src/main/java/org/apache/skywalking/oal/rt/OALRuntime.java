@@ -114,18 +114,15 @@ public class OALRuntime implements OALEngine {
         openEngineDebug = !StringUtil.isEmpty(System.getenv("SW_OAL_ENGINE_DEBUG"));
     }
 
-    @Override
-    public void setStreamListener(StreamAnnotationListener listener) throws ModuleStartException {
+    @Override public void setStreamListener(StreamAnnotationListener listener) throws ModuleStartException {
         this.streamAnnotationListener = listener;
     }
 
-    @Override
-    public void setDispatcherListener(DispatcherDetectorListener listener) throws ModuleStartException {
+    @Override public void setDispatcherListener(DispatcherDetectorListener listener) throws ModuleStartException {
         dispatcherDetectorListener = listener;
     }
 
-    @Override
-    public void start(ClassLoader currentClassLoader) throws ModuleStartException, OALCompileException {
+    @Override public void start(ClassLoader currentClassLoader) throws ModuleStartException, OALCompileException {
         prepareRTTempFolder();
 
         this.currentClassLoader = currentClassLoader;
@@ -154,8 +151,7 @@ public class OALRuntime implements OALEngine {
         this.generateClassAtRuntime(oalScripts);
     }
 
-    @Override
-    public void notifyAllListeners() throws ModuleStartException {
+    @Override public void notifyAllListeners() throws ModuleStartException {
         metricsClasses.forEach(streamAnnotationListener::notify);
         for (Class dispatcherClass : dispatcherClasses) {
             try {
