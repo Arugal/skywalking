@@ -56,22 +56,20 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import static java.util.Objects.nonNull;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_ONE_VERSION_OF_SERVICE_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_ONE_VERSION_OF_SERVICE_MULTIPLE_LINEAR_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_ONE_VERSION_OF_SERVICE_PAGE_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_ONE_VERSION_OF_SERVICE_PAGE_MULTIPLE_LINEAR_METRICS;
 import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_METRICS;
 import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_MULTIPLE_LINEAR_METRICS;
 import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_PAGE_METRICS;
 import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_PAGE_MULTIPLE_LINEAR_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_VERSION_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_VERSION_MULTIPLE_LINEAR_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_VERSION_PAGE_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_VERSION_PAGE_MULTIPLE_LINEAR_METRICS;
 import static org.apache.skywalking.e2e.metrics.MetricsMatcher.verifyMetrics;
 import static org.apache.skywalking.e2e.metrics.MetricsMatcher.verifyPercentileMetrics;
 
@@ -209,11 +207,11 @@ public abstract class BrowserPerfITCase {
     }
 
     private void verifyServiceVersionMetrics(Instance instance, LocalDateTime minutesAgo, LocalDateTime now) throws Exception {
-        for (String metricName : ALL_SERVICE_VERSION_METRICS) {
+        for (String metricName : ALL_ONE_VERSION_OF_SERVICE_METRICS) {
             verifyMetrics(queryClient, metricName, instance.getKey(), minutesAgo, now, retryInterval, this::generateTraffic);
         }
 
-        for (String metricName : ALL_SERVICE_VERSION_MULTIPLE_LINEAR_METRICS) {
+        for (String metricName : ALL_ONE_VERSION_OF_SERVICE_MULTIPLE_LINEAR_METRICS) {
             verifyPercentileMetrics(queryClient, metricName, instance.getKey(), minutesAgo, now, retryInterval, this::generateTraffic);
         }
     }
@@ -231,11 +229,11 @@ public abstract class BrowserPerfITCase {
 
     private void verifyServiceVersionPagePathMetrics(LocalDateTime minutesAgo, LocalDateTime now, Instance instance, Endpoint endpoint) throws Exception {
         String id = String.join("_", instance.getKey(), endpoint.getKey());
-        for (String metricName : ALL_SERVICE_VERSION_PAGE_METRICS) {
+        for (String metricName : ALL_ONE_VERSION_OF_SERVICE_PAGE_METRICS) {
             verifyMetrics(queryClient, metricName, id, minutesAgo, now, retryInterval, this::generateTraffic);
         }
 
-        for (String metricName : ALL_SERVICE_VERSION_PAGE_MULTIPLE_LINEAR_METRICS) {
+        for (String metricName : ALL_ONE_VERSION_OF_SERVICE_PAGE_MULTIPLE_LINEAR_METRICS) {
             verifyPercentileMetrics(queryClient, metricName, id, minutesAgo, now, retryInterval, this::generateTraffic);
         }
     }
