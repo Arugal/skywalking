@@ -69,6 +69,7 @@ public class DefaultScopeDefine {
     public static final int HTTP_ACCESS_LOG = 25;
     public static final int PROFILE_TASK = 26;
     public static final int PROFILE_TASK_LOG = 27;
+    public static final int PROFILE_TASK_SEGMENT_SNAPSHOT = 28;
 
     // browser
     public static final int BROWSER_PERF_DATA = 40;
