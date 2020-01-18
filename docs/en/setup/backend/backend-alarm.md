@@ -85,7 +85,7 @@ Webhook requires the peer is a web container. The alarm message will send throug
 - **scopeId**, **scope**. All scopes are defined in org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.
 - **name**. Target scope entity name.
 - **id0**. The ID of scope entity, matched the name.
-- **id1**. Not used today.
+- **id1**. The ID1 of scope entity.
 - **ruleName**. The rule name you configured in `alarm-settings.yml`.
 - **alarmMessage**. Alarm text message.
 - **startTime**. Alarm time measured in milliseconds, between the current time and midnight, January 1, 1970 UTC.

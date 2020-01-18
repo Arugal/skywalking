@@ -55,6 +55,9 @@ public class AlarmMessageFormatter {
                         case "id":
                             valueFroms.add(ValueFrom.ID);
                             break;
+                        case "id1":
+                            valueFroms.add(ValueFrom.ID1);
+                            break;
                         case "name":
                             valueFroms.add(ValueFrom.NAME);
                             break;
@@ -83,8 +86,12 @@ public class AlarmMessageFormatter {
                     case ID:
                         message.append(meta.getId0());
                         break;
+                    case ID1:
+                        message.append(meta.getId1());
+                        break;
                     case NAME:
                         message.append(meta.getName());
+                        break;
                 }
             }
         }
@@ -92,6 +99,6 @@ public class AlarmMessageFormatter {
     }
 
     private enum ValueFrom {
-        ID, NAME
+        ID, ID1, NAME
     }
 }

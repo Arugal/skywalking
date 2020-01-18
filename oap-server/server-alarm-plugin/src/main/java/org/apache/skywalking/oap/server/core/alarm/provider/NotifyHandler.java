@@ -19,6 +19,8 @@
 package org.apache.skywalking.oap.server.core.alarm.provider;
 
 import java.util.*;
+
+import org.apache.skywalking.oap.server.core.Const;
 import org.apache.skywalking.oap.server.core.CoreModule;
 import org.apache.skywalking.oap.server.core.alarm.*;
 import org.apache.skywalking.oap.server.core.analysis.metrics.*;
@@ -83,11 +85,37 @@ public class NotifyHandler implements MetricsNotify {
             endpointMetaInAlarm.setName(textName);
             metaInAlarm = endpointMetaInAlarm;
         } else if (DefaultScopeDefine.inServicePageCatalog(scope)) {
-            // TODO handler service page path catalog
-            return;
+            String metricsId = meta.getId();
+            String[] ids = metricsId.split(Const.ID_SPLIT);
+            int serviceId = Integer.parseInt(ids[0]);
+            int pagePathId = Integer.parseInt(ids[1]);
+            ServiceInventory serviceInventory = serviceInventoryCache.get(serviceId);
+            EndpointInventory endpointInventory = endpointInventoryCache.get(pagePathId);
+
+            ServicePageMetaInAlarm servicePageMetaInAlarm = new ServicePageMetaInAlarm();
+            servicePageMetaInAlarm.setMetricsName(meta.getMetricsName());
+            servicePageMetaInAlarm.setServiceId(serviceId);
+            servicePageMetaInAlarm.setPagePathId(pagePathId);
+
+            String textName = endpointInventory.getName() + " in " + serviceInventory.getName();
+            servicePageMetaInAlarm.setName(textName);
+            metaInAlarm = servicePageMetaInAlarm;
         } else if (DefaultScopeDefine.inServiceVersionCatalog(scope)) {
-            // TODO handler service version page path catalog
-            return;
+            String metricsId = meta.getId();
+            String[] ids = metricsId.split(Const.ID_SPLIT);
+            int serviceVersionId = Integer.parseInt(ids[0]);
+            int pagePathId = Integer.parseInt(ids[1]);
+            ServiceInstanceInventory serviceInstanceInventory = serviceInstanceInventoryCache.get(serviceVersionId);
+            EndpointInventory endpointInventory = endpointInventoryCache.get(pagePathId);
+
+            ServiceVersionPageMetaInAlarm versionPageMetaInAlarm = new ServiceVersionPageMetaInAlarm();
+            versionPageMetaInAlarm.setMetricsName(meta.getMetricsName());
+            versionPageMetaInAlarm.setServiceVersionId(serviceVersionId);
+            versionPageMetaInAlarm.setPatePathId(pagePathId);
+
+            String textName = endpointInventory.getName() + " in " + serviceInstanceInventory.getName();
+            versionPageMetaInAlarm.setName(textName);
+            metaInAlarm = versionPageMetaInAlarm;
         } else {
             return;
         }
