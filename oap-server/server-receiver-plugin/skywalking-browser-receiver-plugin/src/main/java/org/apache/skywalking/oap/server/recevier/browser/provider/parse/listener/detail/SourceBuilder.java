@@ -39,6 +39,7 @@ class SourceBuilder {
     private String pagePath;
 
     private boolean isError;
+    private boolean status;
 
     // perfDetail
     private int redirectTime;
@@ -48,11 +49,16 @@ class SourceBuilder {
     private int domReadyTime;
     private int blankTime;
 
+    public void setError(boolean error) {
+        isError = error;
+        status = !error;
+    }
+
     ServicePerfDetail toServicePerfDetail() {
         ServicePerfDetail servicePerfDetail = new ServicePerfDetail();
         servicePerfDetail.setId(serviceId);
         servicePerfDetail.setName(serviceVersionName);
-        servicePerfDetail.setStatus(!isError);
+        servicePerfDetail.setStatus(status);
         servicePerfDetail.setRedirectTime(redirectTime);
         servicePerfDetail.setDnsTime(dnsTime);
         servicePerfDetail.setReqTime(reqTime);
@@ -69,7 +75,7 @@ class SourceBuilder {
         servicePagePathPerfDetail.setName(pagePath);
         servicePagePathPerfDetail.setServiceId(serviceId);
         servicePagePathPerfDetail.setServiceName(serviceName);
-        servicePagePathPerfDetail.setStatus(!isError);
+        servicePagePathPerfDetail.setStatus(status);
         servicePagePathPerfDetail.setRedirectTime(redirectTime);
         servicePagePathPerfDetail.setDnsTime(dnsTime);
         servicePagePathPerfDetail.setReqTime(reqTime);
@@ -86,7 +92,7 @@ class SourceBuilder {
         serviceVersionPerfDetail.setName(serviceVersionName);
         serviceVersionPerfDetail.setServiceId(serviceId);
         serviceVersionPerfDetail.setServiceName(serviceVersionName);
-        serviceVersionPerfDetail.setStatus(!isError);
+        serviceVersionPerfDetail.setStatus(status);
         serviceVersionPerfDetail.setRedirectTime(redirectTime);
         serviceVersionPerfDetail.setDnsTime(dnsTime);
         serviceVersionPerfDetail.setReqTime(reqTime);
@@ -105,7 +111,7 @@ class SourceBuilder {
         serviceVersionPagePathPerfDetail.setServiceName(serviceName);
         serviceVersionPagePathPerfDetail.setServiceVersionId(serviceVersionId);
         serviceVersionPagePathPerfDetail.setServiceVersionName(serviceVersionName);
-        serviceVersionPagePathPerfDetail.setStatus(!isError);
+        serviceVersionPagePathPerfDetail.setStatus(status);
         serviceVersionPagePathPerfDetail.setRedirectTime(redirectTime);
         serviceVersionPagePathPerfDetail.setDnsTime(dnsTime);
         serviceVersionPagePathPerfDetail.setReqTime(reqTime);

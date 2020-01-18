@@ -68,6 +68,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -356,7 +357,7 @@ public class OALRuntime implements OALEngine {
      * @throws OALCompileException
      */
     private Class generateDispatcherClass(String scopeName,
-                                          DispatcherContext dispatcherContext) throws OALCompileException {
+        DispatcherContext dispatcherContext) throws OALCompileException {
 
         String className = dispatcherClassName(scopeName, false);
         CtClass dispatcherClass = classPool.makeClass(dispatcherClassName(scopeName, true));
@@ -391,6 +392,7 @@ public class OALRuntime implements OALEngine {
                 }
             }
             if (classNotFound != null) {
+                logger.error("Can't find {} in {}", dispatcherContext.getSource(), Arrays.toString(SOURCE_PACKAGES));
                 throw new OALCompileException(classNotFound.getMessage(), classNotFound);
             }
         } catch (NotFoundException e) {
