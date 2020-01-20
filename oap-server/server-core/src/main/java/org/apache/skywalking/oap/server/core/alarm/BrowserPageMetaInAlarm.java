@@ -28,7 +28,7 @@ import org.apache.skywalking.oap.server.core.source.DefaultScopeDefine;
  */
 @Getter(AccessLevel.PUBLIC)
 @Setter(AccessLevel.PUBLIC)
-public class ServicePageMetaInAlarm extends MetaInAlarm {
+public class BrowserPageMetaInAlarm extends MetaInAlarm {
 
     private String metricsName;
     private int id;
