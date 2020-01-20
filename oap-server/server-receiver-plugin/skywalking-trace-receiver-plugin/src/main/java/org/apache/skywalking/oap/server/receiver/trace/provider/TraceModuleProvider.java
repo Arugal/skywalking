@@ -21,6 +21,8 @@ package org.apache.skywalking.oap.server.receiver.trace.provider;
 import org.apache.skywalking.oap.server.configuration.api.ConfigurationModule;
 import org.apache.skywalking.oap.server.configuration.api.DynamicConfigurationService;
 import org.apache.skywalking.oap.server.core.CoreModule;
+import org.apache.skywalking.oap.server.core.oal.rt.OALEngine;
+import org.apache.skywalking.oap.server.core.oal.rt.OALEngineService;
 import org.apache.skywalking.oap.server.core.server.GRPCHandlerRegister;
 import org.apache.skywalking.oap.server.library.module.ModuleConfig;
 import org.apache.skywalking.oap.server.library.module.ModuleDefine;
@@ -95,6 +97,8 @@ public class TraceModuleProvider extends ModuleProvider {
     }
 
     @Override public void start() throws ModuleStartException {
+        getManager().find(CoreModule.NAME).provider().getService(OALEngineService.class).activate(OALEngine.Group.OFFICIAL);
+
         DynamicConfigurationService dynamicConfigurationService = getManager().find(ConfigurationModule.NAME).provider().getService(DynamicConfigurationService.class);
         GRPCHandlerRegister grpcHandlerRegister = getManager().find(SharingServerModule.NAME).provider().getService(GRPCHandlerRegister.class);
         try {

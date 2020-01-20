@@ -26,6 +26,7 @@ import org.apache.skywalking.oap.server.core.command.CommandService;
 import org.apache.skywalking.oap.server.core.config.ConfigService;
 import org.apache.skywalking.oap.server.core.config.DownsamplingConfigService;
 import org.apache.skywalking.oap.server.core.config.IComponentLibraryCatalogService;
+import org.apache.skywalking.oap.server.core.oal.rt.OALEngineService;
 import org.apache.skywalking.oap.server.core.profile.ProfileTaskMutationService;
 import org.apache.skywalking.oap.server.core.query.*;
 import org.apache.skywalking.oap.server.core.register.service.IEndpointInventoryRegister;
@@ -71,6 +72,8 @@ public class CoreModule extends ModuleDefine {
         addCacheService(classes);
         addQueryService(classes);
         addProfileService(classes);
+
+        addOALEngineService(classes);
 
         classes.add(CommandService.class);
 
@@ -123,5 +126,9 @@ public class CoreModule extends ModuleDefine {
 
     private void addReceiverInterface(List<Class> classes) {
         classes.add(SourceReceiver.class);
+    }
+
+    private void addOALEngineService(List<Class> classes) {
+        classes.add(OALEngineService.class);
     }
 }

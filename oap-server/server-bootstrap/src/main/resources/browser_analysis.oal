@@ -1,0 +1,87 @@
+/*
+* Licensed to the Apache Software Foundation (ASF) under one or more
+* contributor license agreements.  See the NOTICE file distributed with
+* this work for additional information regarding copyright ownership.
+* The ASF licenses this file to You under the Apache License, Version 2.0
+* (the "License"); you may not use this file except in compliance with
+* the License.  You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*
+*/
+
+// Browser service
+browser_redirect_avg = from(BrowserPerfDetail.redirectTime).longAvg();
+browser_dns_avg = from(BrowserPerfDetail.dnsTime).longAvg();
+browser_req_avg = from(BrowserPerfDetail.reqTime).longAvg();
+browser_dom_analysis_avg = from(BrowserPerfDetail.domAnalysisTime).longAvg();
+browser_dom_ready_avg = from(BrowserPerfDetail.domReadyTime).longAvg();
+browser_blank_avg = from(BrowserPerfDetail.blankTime).longAvg();
+
+// Multiple values including p50, p75, p90, p95, p99
+browser_redirect_percentile = from(BrowserPerfDetail.redirectTime).percentile(10);
+browser_dns_percentile = from(BrowserPerfDetail.dnsTime).percentile(10);
+browser_req_percentile = from(BrowserPerfDetail.reqTime).percentile(10);
+browser_dom_analysis_percentile = from(BrowserPerfDetail.domAnalysisTime).percentile(10);
+browser_dom_ready_percentile = from(BrowserPerfDetail.domReadyTime).percentile(10);
+browser_blank_percentile = from(BrowserPerfDetail.blankTime).percentile(10);
+
+// Browser service page
+browser_page_pv = from(BrowserPagePathPerfDetail.count).sum();
+browser_page_error_rate = from(BrowserPagePathPerfDetail.*).percent(status == false);
+
+browser_page_redirect_avg = from(BrowserPagePathPerfDetail.redirectTime).longAvg();
+browser_page_dns_avg = from(BrowserPagePathPerfDetail.dnsTime).longAvg();
+browser_page_req_avg = from(BrowserPagePathPerfDetail.reqTime).longAvg();
+browser_page_dom_analysis_avg = from(BrowserPagePathPerfDetail.domAnalysisTime).longAvg();
+browser_page_dom_ready_avg = from(BrowserPagePathPerfDetail.domReadyTime).longAvg();
+browser_page_blank_avg = from(BrowserPagePathPerfDetail.blankTime).longAvg();
+
+// Multiple values including p50, p75, p90, p95, p99
+browser_page_redirect_percentile = from(BrowserPagePathPerfDetail.redirectTime).percentile(10);
+browser_page_dns_percentile = from(BrowserPagePathPerfDetail.dnsTime).percentile(10);
+browser_page_req_percentile = from(BrowserPagePathPerfDetail.reqTime).percentile(10);
+browser_page_dom_analysis_percentile = from(BrowserPagePathPerfDetail.domAnalysisTime).percentile(10);
+browser_page_dom_ready_percentile = from(BrowserPagePathPerfDetail.domReadyTime).percentile(10);
+browser_page_blank_percentile = from(BrowserPagePathPerfDetail.blankTime).percentile(10);
+
+// Browser service version
+browser_single_version_redirect_avg = from(BrowserSingleVersionPerfDetail.redirectTime).longAvg();
+browser_single_version_dns_avg = from(BrowserSingleVersionPerfDetail.dnsTime).longAvg();
+browser_single_version_req_avg = from(BrowserSingleVersionPerfDetail.reqTime).longAvg();
+browser_single_version_dom_analysis_avg = from(BrowserSingleVersionPerfDetail.domAnalysisTime).longAvg();
+browser_single_version_dom_ready_avg = from(BrowserSingleVersionPerfDetail.domReadyTime).longAvg();
+browser_single_version_blank_avg = from(BrowserSingleVersionPerfDetail.blankTime).longAvg();
+
+// Multiple values including p50, p75, p90, p95, p99
+browser_single_version_redirect_percentile = from(BrowserSingleVersionPerfDetail.redirectTime).percentile(10);
+browser_single_version_dns_percentile = from(BrowserSingleVersionPerfDetail.dnsTime).percentile(10);
+browser_single_version_req_percentile = from(BrowserSingleVersionPerfDetail.reqTime).percentile(10);
+browser_single_version_dom_analysis_percentile = from(BrowserSingleVersionPerfDetail.domAnalysisTime).percentile(10);
+browser_single_version_dom_ready_percentile = from(BrowserSingleVersionPerfDetail.domReadyTime).percentile(10);
+browser_single_version_blank_percentile = from(BrowserSingleVersionPerfDetail.blankTime).percentile(10);
+
+// Browser service version page
+browser_single_version_page_pv = from(BrowserSingleVersionPagePathPerfDetail.count).sum();
+browser_single_version_page_error_rate = from(BrowserSingleVersionPagePathPerfDetail.*).percent(status == false);
+
+browser_single_version_page_redirect_avg = from(BrowserSingleVersionPagePathPerfDetail.redirectTime).longAvg();
+browser_single_version_page_dns_avg = from(BrowserSingleVersionPagePathPerfDetail.dnsTime).longAvg();
+browser_single_version_page_req_avg = from(BrowserSingleVersionPagePathPerfDetail.reqTime).longAvg();
+browser_single_version_page_dom_analysis_avg = from(BrowserSingleVersionPagePathPerfDetail.domAnalysisTime).longAvg();
+browser_single_version_page_dom_ready_avg = from(BrowserSingleVersionPagePathPerfDetail.domReadyTime).longAvg();
+browser_single_version_page_blank_avg = from(BrowserSingleVersionPagePathPerfDetail.blankTime).longAvg();
+
+// Multiple values including p50, p75, p90, p95, p99
+browser_single_version_page_redirect_percentile = from(BrowserSingleVersionPagePathPerfDetail.redirectTime).percentile(10);
+browser_single_version_page_dns_percentile = from(BrowserSingleVersionPagePathPerfDetail.dnsTime).percentile(10);
+browser_single_version_page_req_percentile = from(BrowserSingleVersionPagePathPerfDetail.reqTime).percentile(10);
+browser_single_version_page_dom_analysis_percentile = from(BrowserSingleVersionPagePathPerfDetail.domAnalysisTime).percentile(10);
+browser_single_version_page_dom_ready_percentile = from(BrowserSingleVersionPagePathPerfDetail.domReadyTime).percentile(10);
+browser_single_version_page_blank_percentile = from(BrowserSingleVersionPagePathPerfDetail.blankTime).percentile(10);

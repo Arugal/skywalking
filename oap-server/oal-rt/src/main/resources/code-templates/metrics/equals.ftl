@@ -6,7 +6,7 @@ public boolean equals(Object obj) {
     if (getClass() != obj.getClass())
         return false;
 
-    org.apache.skywalking.oal.rt.metrics.${metricsName}Metrics metrics = (org.apache.skywalking.oal.rt.metrics.${metricsName}Metrics)obj;
+    ${metricsPackage}${metricsName}Metrics metrics = (${metricsPackage}${metricsName}Metrics)obj;
     <#list fieldsFromSource as sourceField>
         <#if sourceField.isID()>
             <#if sourceField.getTypeName() == "java.lang.String">

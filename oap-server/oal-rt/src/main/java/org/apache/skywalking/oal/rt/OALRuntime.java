@@ -36,6 +36,7 @@ import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.skywalking.apm.util.StringUtil;
 import org.apache.skywalking.oal.rt.output.AllDispatcherContext;
@@ -68,10 +69,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import static java.util.Objects.requireNonNull;
+
 
 /**
  * OAL Runtime is the class generation engine, which load the generated classes from OAL scrip definitions. This runtime
@@ -84,17 +87,14 @@ public class OALRuntime implements OALEngine {
 
     private static final String CLASS_FILE_CHARSET = "UTF-8";
     private static final String METRICS_FUNCTION_PACKAGE = "org.apache.skywalking.oap.server.core.analysis.metrics.";
-    private static final String DYNAMIC_METRICS_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.metrics.";
-    private static final String DYNAMIC_METRICS_BUILDER_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.metrics.builder.";
-    private static final String DYNAMIC_DISPATCHER_CLASS_PACKAGE = "org.apache.skywalking.oal.rt.dispatcher.";
     private static final String WITH_METADATA_INTERFACE = "org.apache.skywalking.oap.server.core.analysis.metrics.WithMetadata";
     private static final String STORAGE_BUILDER_INTERFACE = "org.apache.skywalking.oap.server.core.storage.StorageBuilder";
     private static final String DISPATCHER_INTERFACE = "org.apache.skywalking.oap.server.core.analysis.SourceDispatcher";
-    private static final String[] SOURCE_PACKAGES = {"org.apache.skywalking.oap.server.core.source.", "org.apache.skywalking.oap.server.core.browser.source."};
     private static final String METRICS_STREAM_PROCESSOR = "org.apache.skywalking.oap.server.core.analysis.worker.MetricsStreamProcessor";
     private static final String[] METRICS_CLASS_METHODS = {"id", "hashCode", "remoteHashCode", "equals", "serialize", "deserialize", "getMeta", "toHour", "toDay", "toMonth"};
     private static final String[] METRICS_BUILDER_CLASS_METHODS = {"data2Map", "map2Data"};
     private final ClassPool classPool;
+    @Getter private final OALEngine.Group oalEngineGroup;
     private ClassLoader currentClassLoader;
     private Configuration configuration;
     private AllDispatcherContext allDispatcherContext;
@@ -104,7 +104,9 @@ public class OALRuntime implements OALEngine {
     private final List<Class> dispatcherClasses;
     private final boolean openEngineDebug;
 
-    public OALRuntime() {
+
+    public OALRuntime(OALEngine.Group group)  {
+        this.oalEngineGroup = requireNonNull(group);
         classPool = ClassPool.getDefault();
         configuration = new Configuration(new Version("2.3.28"));
         configuration.setEncoding(Locale.ENGLISH, CLASS_FILE_CHARSET);
@@ -136,9 +138,9 @@ public class OALRuntime implements OALEngine {
         }
 
         try {
-            read = ResourceUtils.read("official_analysis.oal");
+            read = ResourceUtils.read(oalEngineGroup.getOalConfigFile());
         } catch (FileNotFoundException e) {
-            throw new ModuleStartException("Can't locate official_analysis.oal", e);
+            throw new ModuleStartException("Can't locate " + oalEngineGroup.getOalConfigFile(), e);
         }
 
         OALScripts oalScripts;
@@ -369,32 +371,15 @@ public class OALRuntime implements OALEngine {
             /**
              * Set generic signature
              */
-            ClassNotFoundException classNotFound = null;
-            for (String sourcePackage : SOURCE_PACKAGES) {
-                try {
-                    String sourceClassName = sourcePackage + dispatcherContext.getSource();
-                    Class.forName(sourceClassName);
-                    SignatureAttribute.ClassSignature dispatcherSignature = new SignatureAttribute.ClassSignature(null, null,
-                            // Set interface and its generic params
-                            new SignatureAttribute.ClassType[]{
-                                new SignatureAttribute.ClassType(SourceDispatcher.class.getCanonicalName(),
-                                    new SignatureAttribute.TypeArgument[]{new SignatureAttribute.TypeArgument(new SignatureAttribute.ClassType(sourceClassName))}
-                                )});
+            String sourceClassName = oalEngineGroup.getSourcePackage() + dispatcherContext.getSource();
+            SignatureAttribute.ClassSignature dispatcherSignature = new SignatureAttribute.ClassSignature(null, null,
+                // Set interface and its generic params
+                new SignatureAttribute.ClassType[]{
+                    new SignatureAttribute.ClassType(SourceDispatcher.class.getCanonicalName(),
+                        new SignatureAttribute.TypeArgument[]{new SignatureAttribute.TypeArgument(new SignatureAttribute.ClassType(sourceClassName))}
+                    )});
 
-                    dispatcherClass.setGenericSignature(dispatcherSignature.encode());
-                    // Set source package
-                    dispatcherContext.setSourcePackage(sourcePackage);
-                    dispatcherContext.getMetrics().forEach(analysisResult -> analysisResult.setSourcePackage(sourcePackage));
-                    classNotFound = null;
-                    break;
-                } catch (ClassNotFoundException e) {
-                    classNotFound = e;
-                }
-            }
-            if (classNotFound != null) {
-                logger.error("Can't find {} in {}", dispatcherContext.getSource(), Arrays.toString(SOURCE_PACKAGES));
-                throw new OALCompileException(classNotFound.getMessage(), classNotFound);
-            }
+            dispatcherClass.setGenericSignature(dispatcherSignature.encode());
         } catch (NotFoundException e) {
             logger.error("Can't find Dispatcher interface for " + className + ".", e);
             throw new OALCompileException(e.getMessage(), e);
@@ -437,27 +422,30 @@ public class OALRuntime implements OALEngine {
     }
 
     private String metricsClassName(AnalysisResult metricsStmt, boolean fullName) {
-        return (fullName ? DYNAMIC_METRICS_CLASS_PACKAGE : "") + metricsStmt.getMetricsName() + "Metrics";
+        return (fullName ? oalEngineGroup.getDynamicMetricsPackage() : "") + metricsStmt.getMetricsName() + "Metrics";
     }
 
     private String metricsBuilderClassName(AnalysisResult metricsStmt, boolean fullName) {
-        return (fullName ? DYNAMIC_METRICS_BUILDER_CLASS_PACKAGE : "") + metricsStmt.getMetricsName() + "MetricsBuilder";
+        return (fullName ? oalEngineGroup.getDynamicMetricsBuilderPackage() : "") + metricsStmt.getMetricsName() + "MetricsBuilder";
     }
 
     private String dispatcherClassName(String scopeName, boolean fullName) {
-        return (fullName ? DYNAMIC_DISPATCHER_CLASS_PACKAGE : "") + scopeName + "Dispatcher";
+        return (fullName ? oalEngineGroup.getDynamicDispatcherPackage() : "") + scopeName + "Dispatcher";
     }
 
     private void buildDispatcherContext(AnalysisResult metricsStmt) {
         String sourceName = metricsStmt.getSourceName();
 
-        DispatcherContext context = allDispatcherContext.getAllContext().get(sourceName);
-        if (context == null) {
-            context = new DispatcherContext();
-            context.setSource(sourceName);
-            context.setPackageName(sourceName.toLowerCase());
-            allDispatcherContext.getAllContext().put(sourceName, context);
-        }
+        DispatcherContext context = allDispatcherContext.getAllContext().computeIfAbsent(sourceName, name -> {
+            DispatcherContext absent = new DispatcherContext();
+            absent.setSourcePackage(oalEngineGroup.getSourcePackage());
+            absent.setSource(sourceName);
+            absent.setPackageName(sourceName.toLowerCase());
+            return absent;
+        });
+
+        metricsStmt.setMetricsPackage(oalEngineGroup.getDynamicMetricsPackage());
+        metricsStmt.setSourcePackage(oalEngineGroup.getSourcePackage());
         context.getMetrics().add(metricsStmt);
     }
 
@@ -510,6 +498,5 @@ public class OALRuntime implements OALEngine {
                 }
             }
         }
-
     }
 }

@@ -48,6 +48,7 @@
             <directory>${project.basedir}/../oap-server/server-bootstrap/src/main/resources</directory>
             <includes>
                 <include>component-libraries.yml</include>
+                <include>browser_analysis.oal</include>
                 <include>official_analysis.oal</include>
                 <include>gateways.yml</include>
                 <include>service-apdex-threshold.yml</include>

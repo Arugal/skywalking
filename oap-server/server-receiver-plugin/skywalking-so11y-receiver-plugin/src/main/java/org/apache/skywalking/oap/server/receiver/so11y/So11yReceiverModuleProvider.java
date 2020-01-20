@@ -28,10 +28,22 @@ import lombok.ToString;
 import org.apache.skywalking.oap.server.core.Const;
 import org.apache.skywalking.oap.server.core.CoreModule;
 import org.apache.skywalking.oap.server.core.analysis.TimeBucket;
+import org.apache.skywalking.oap.server.core.oal.rt.OALEngine;
+import org.apache.skywalking.oap.server.core.oal.rt.OALEngineService;
 import org.apache.skywalking.oap.server.core.register.service.IServiceInstanceInventoryRegister;
 import org.apache.skywalking.oap.server.core.register.service.IServiceInventoryRegister;
-import org.apache.skywalking.oap.server.core.source.*;
-import org.apache.skywalking.oap.server.library.module.*;
+import org.apache.skywalking.oap.server.core.source.GCPhrase;
+import org.apache.skywalking.oap.server.core.source.MemoryPoolType;
+import org.apache.skywalking.oap.server.core.source.ServiceInstanceJVMCPU;
+import org.apache.skywalking.oap.server.core.source.ServiceInstanceJVMGC;
+import org.apache.skywalking.oap.server.core.source.ServiceInstanceJVMMemory;
+import org.apache.skywalking.oap.server.core.source.ServiceInstanceJVMMemoryPool;
+import org.apache.skywalking.oap.server.core.source.SourceReceiver;
+import org.apache.skywalking.oap.server.library.module.ModuleConfig;
+import org.apache.skywalking.oap.server.library.module.ModuleDefine;
+import org.apache.skywalking.oap.server.library.module.ModuleProvider;
+import org.apache.skywalking.oap.server.library.module.ModuleStartException;
+import org.apache.skywalking.oap.server.library.module.ServiceNotProvidedException;
 import org.apache.skywalking.oap.server.telemetry.TelemetryModule;
 import org.apache.skywalking.oap.server.telemetry.api.MetricFamily;
 import org.apache.skywalking.oap.server.telemetry.api.MetricsCollector;
@@ -103,6 +115,8 @@ public class So11yReceiverModuleProvider extends ModuleProvider {
 
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
+        getManager().find(CoreModule.NAME).provider().getService(OALEngineService.class).activate(OALEngine.Group.OFFICIAL);
+
         serviceInventoryRegister = getManager().find(CoreModule.NAME).provider().getService(IServiceInventoryRegister.class);
         serviceInstanceInventoryRegister = getManager().find(CoreModule.NAME).provider().getService(IServiceInstanceInventoryRegister.class);
         sourceReceiver = getManager().find(CoreModule.NAME).provider().getService(SourceReceiver.class);

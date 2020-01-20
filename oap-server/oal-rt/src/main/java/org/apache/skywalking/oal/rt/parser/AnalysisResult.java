@@ -28,6 +28,8 @@ public class AnalysisResult {
 
     private String metricsName;
 
+    private String metricsPackage;
+
     private String tableName;
 
     private String packageName;

@@ -18,6 +18,7 @@
 
 package org.apache.skywalking.oap.server.core.source;
 
+import org.apache.skywalking.oap.server.core.analysis.DispatcherDetectorListener;
 import org.apache.skywalking.oap.server.library.module.Service;
 
 /**
@@ -25,4 +26,6 @@ import org.apache.skywalking.oap.server.library.module.Service;
  */
 public interface SourceReceiver extends Service {
     void receive(Source source);
+
+    DispatcherDetectorListener getDispatcherDetectorListener();
 }

@@ -31,7 +31,7 @@ import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.BR
 /**
  * @author zhangwei
  */
-@ScopeDeclaration(id = BROWSER_SINGLE_VERSION_PAGE_PATH_PERF_DETAIL, name = "ServiceVersionPagePathPerfDetail", catalog = BROWSER_SINGLE_VERSION_PAGE_PATH_CATALOG_NAME)
+@ScopeDeclaration(id = BROWSER_SINGLE_VERSION_PAGE_PATH_PERF_DETAIL, name = "BrowserSingleVersionPagePathPerfDetail", catalog = BROWSER_SINGLE_VERSION_PAGE_PATH_CATALOG_NAME)
 @ScopeDefaultColumn.VirtualColumnDefinition(fieldName = "entityId", columnName = "entity_id", isID = true, type = String.class)
 public class BrowserSingleVersionPagePathPerfDetail extends Source {
     @Override

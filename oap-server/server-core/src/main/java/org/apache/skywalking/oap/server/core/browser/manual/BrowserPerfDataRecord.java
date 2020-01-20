@@ -40,7 +40,7 @@ import java.util.Map;
 @Stream(name = BrowserPerfDataRecord.INDEX_NAME, scopeId = DefaultScopeDefine.BROWSER_PERF_DATA, builder = BrowserPerfDataRecord.Builder.class, processor = RecordStreamProcessor.class)
 public class BrowserPerfDataRecord extends Record {
 
-    public static final String INDEX_NAME = "browser_perf";
+    public static final String INDEX_NAME = "browser_perf_data";
     public static final String UNIQUE_ID = "unique_id";
     public static final String SERVICE_ID = "service_id";
     public static final String SERVICE_INSTANCE_ID = "service_instance_id";

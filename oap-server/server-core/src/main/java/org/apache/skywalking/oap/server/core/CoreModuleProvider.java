@@ -61,7 +61,6 @@ public class CoreModuleProvider extends ModuleProvider {
     private final AnnotationScan annotationScan;
     private final StorageModels storageModels;
     private final SourceReceiverImpl receiver;
-    private OALEngine oalEngine;
     private ApdexThresholdConfig apdexThresholdConfig;
 
     public CoreModuleProvider() {
@@ -91,11 +90,6 @@ public class CoreModuleProvider extends ModuleProvider {
         scopeScan.registerListener(new DefaultScopeDefine.Listener());
         try {
             scopeScan.scan();
-
-            oalEngine = OALEngineLoader.get();
-            oalEngine.setStreamListener(streamAnnotationListener);
-            oalEngine.setDispatcherListener(receiver.getDispatcherManager());
-            oalEngine.start(getClass().getClassLoader());
         } catch (Exception e) {
             throw new ModuleStartException(e.getMessage(), e);
         }
@@ -174,6 +168,9 @@ public class CoreModuleProvider extends ModuleProvider {
 
         this.registerServiceImplementation(CommandService.class, new CommandService(getManager()));
 
+        // add oal engine service implementations
+        this.registerServiceImplementation(OALEngineService.class, new OALEngineService(getManager()));
+
         annotationScan.registerListener(streamAnnotationListener);
 
         this.remoteClientManager = new RemoteClientManager(getManager(), moduleConfig.getRemoteTimeout());
@@ -194,8 +191,6 @@ public class CoreModuleProvider extends ModuleProvider {
         try {
             receiver.scan();
             annotationScan.scan();
-
-            oalEngine.notifyAllListeners();
         } catch (IOException | IllegalAccessException | InstantiationException e) {
             throw new ModuleStartException(e.getMessage(), e);
         }

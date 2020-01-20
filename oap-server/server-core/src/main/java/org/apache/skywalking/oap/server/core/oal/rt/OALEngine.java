@@ -18,6 +18,7 @@
 
 package org.apache.skywalking.oap.server.core.oal.rt;
 
+import lombok.Getter;
 import org.apache.skywalking.oap.server.core.analysis.DispatcherDetectorListener;
 import org.apache.skywalking.oap.server.core.analysis.StreamAnnotationListener;
 import org.apache.skywalking.oap.server.library.module.ModuleStartException;
@@ -35,4 +36,29 @@ public interface OALEngine {
     void start(ClassLoader currentClassLoader) throws ModuleStartException, OALCompileException;
 
     void notifyAllListeners() throws ModuleStartException;
+
+    @Getter
+    enum Group {
+
+        OFFICIAL("official_analysis.oal", "org.apache.skywalking.oap.server.core.source.",
+            "org.apache.skywalking.oal.rt.official.metrics.", "org.apache.skywalking.oal.rt.official.metrics.builder",
+            "org.apache.skywalking.oal.rt.official.dispatcher."),
+        BROWSER("browser_analysis.oal", "org.apache.skywalking.oap.server.core.browser.source.",
+            "org.apache.skywalking.oal.rt.browser.metrics.", "org.apache.skywalking.oal.rt.browser.metrics.builder",
+            "org.apache.skywalking.oal.rt.browser.dispatcher.");
+
+        private String oalConfigFile;
+        private String sourcePackage;
+        private String dynamicMetricsPackage;
+        private String dynamicMetricsBuilderPackage;
+        private String dynamicDispatcherPackage;
+
+        Group(String oalConfigFile, String sourcePackage, String dynamicMetricsPackage, String dynamicMetricsBuilderPackage, String dynamicDispatcherPackage) {
+            this.oalConfigFile = oalConfigFile;
+            this.sourcePackage = sourcePackage;
+            this.dynamicMetricsPackage = dynamicMetricsPackage;
+            this.dynamicMetricsBuilderPackage = dynamicMetricsBuilderPackage;
+            this.dynamicDispatcherPackage = dynamicDispatcherPackage;
+        }
+    }
 }

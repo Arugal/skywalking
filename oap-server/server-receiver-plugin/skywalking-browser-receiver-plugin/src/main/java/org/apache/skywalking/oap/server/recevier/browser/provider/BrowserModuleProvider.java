@@ -20,6 +20,8 @@ package org.apache.skywalking.oap.server.recevier.browser.provider;
 
 import org.apache.skywalking.oap.server.configuration.api.ConfigurationModule;
 import org.apache.skywalking.oap.server.core.CoreModule;
+import org.apache.skywalking.oap.server.core.oal.rt.OALEngine;
+import org.apache.skywalking.oap.server.core.oal.rt.OALEngineService;
 import org.apache.skywalking.oap.server.core.server.GRPCHandlerRegister;
 import org.apache.skywalking.oap.server.library.module.ModuleConfig;
 import org.apache.skywalking.oap.server.library.module.ModuleDefine;
@@ -77,11 +79,12 @@ public class BrowserModuleProvider extends ModuleProvider {
 
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
+        getManager().find(CoreModule.NAME).provider().getService(OALEngineService.class).activate(OALEngine.Group.BROWSER);
+
         GRPCHandlerRegister grpcHandlerRegister = getManager().find(SharingServerModule.NAME).provider().getService(GRPCHandlerRegister.class);
-
         try {
-            grpcHandlerRegister.addHandler(new BrowserPerfServiceHandler(browserPerfProducer, getManager()));
 
+            grpcHandlerRegister.addHandler(new BrowserPerfServiceHandler(browserPerfProducer, getManager()));
             BrowserPerfDataStandardizationWorker standardizationWorker = new BrowserPerfDataStandardizationWorker(getManager(), browserPerfProducer,
                 moduleConfig.getBufferPath(), moduleConfig.getBufferOffsetMaxFileSize(), moduleConfig.getBufferDataMaxFileSize(), moduleConfig.isBufferFileCleanWhenRestart());
             browserPerfProducer.setStandardizationWorker(standardizationWorker);
@@ -92,7 +95,6 @@ public class BrowserModuleProvider extends ModuleProvider {
 
     @Override
     public void notifyAfterCompleted() throws ServiceNotProvidedException, ModuleStartException {
-
     }
 
     @Override

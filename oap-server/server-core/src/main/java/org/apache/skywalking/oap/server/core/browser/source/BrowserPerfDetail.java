@@ -30,7 +30,7 @@ import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.BR
 /**
  * @author zhangwei
  */
-@ScopeDeclaration(id = BROWSER_PERF_DETAIL, name = "ServicePerfDetail", catalog = SERVICE_CATALOG_NAME)
+@ScopeDeclaration(id = BROWSER_PERF_DETAIL, name = "BrowserPerfDetail", catalog = SERVICE_CATALOG_NAME)
 @ScopeDefaultColumn.VirtualColumnDefinition(fieldName = "entityId", columnName = "entity_id", isID = true, type = String.class)
 public class BrowserPerfDetail extends Source {
 
