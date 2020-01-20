@@ -92,13 +92,13 @@ public class NotifyHandler implements MetricsNotify {
             ServiceInventory serviceInventory = serviceInventoryCache.get(serviceId);
             EndpointInventory endpointInventory = endpointInventoryCache.get(pagePathId);
 
-            ServicePageMetaInAlarm servicePageMetaInAlarm = new ServicePageMetaInAlarm();
-            servicePageMetaInAlarm.setMetricsName(meta.getMetricsName());
-            servicePageMetaInAlarm.setId(pagePathId);
+            BrowserPageMetaInAlarm browserPageMetaInAlarm = new BrowserPageMetaInAlarm();
+            browserPageMetaInAlarm.setMetricsName(meta.getMetricsName());
+            browserPageMetaInAlarm.setId(pagePathId);
 
             String textName = endpointInventory.getName() + " in " + serviceInventory.getName();
-            servicePageMetaInAlarm.setName(textName);
-            metaInAlarm = servicePageMetaInAlarm;
+            browserPageMetaInAlarm.setName(textName);
+            metaInAlarm = browserPageMetaInAlarm;
         } else if (DefaultScopeDefine.inBrowserSingleVersionCatalog(scope)) {
             String metricsId = meta.getId();
             String[] ids = metricsId.split(Const.ID_SPLIT);
@@ -107,7 +107,7 @@ public class NotifyHandler implements MetricsNotify {
             ServiceInstanceInventory serviceInstanceInventory = serviceInstanceInventoryCache.get(serviceVersionId);
             EndpointInventory endpointInventory = endpointInventoryCache.get(pagePathId);
 
-            ServiceVersionPageMetaInAlarm versionPageMetaInAlarm = new ServiceVersionPageMetaInAlarm();
+            BrowserSingleVersionPageMetaInAlarm versionPageMetaInAlarm = new BrowserSingleVersionPageMetaInAlarm();
             versionPageMetaInAlarm.setMetricsName(meta.getMetricsName());
             versionPageMetaInAlarm.setId(pagePathId);
 
