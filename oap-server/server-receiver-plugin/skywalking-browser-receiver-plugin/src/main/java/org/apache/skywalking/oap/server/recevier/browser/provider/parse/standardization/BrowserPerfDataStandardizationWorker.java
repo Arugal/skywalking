@@ -49,10 +49,10 @@ public class BrowserPerfDataStandardizationWorker extends AbstractWorker<Browser
         super(moduleDefineHolder);
         BufferStream.Builder<BrowserPerfData> builder = new BufferStream.Builder<>(path);
         builder.cleanWhenRestart(cleanWhenRestart)
-                .dataFileMaxSize(dataFileMaxSize)
-                .offsetFileMaxSize(offsetFileMaxSize)
-                .parser(BrowserPerfData.parser())
-                .callBack(perfDataParse);
+            .dataFileMaxSize(dataFileMaxSize)
+            .offsetFileMaxSize(offsetFileMaxSize)
+            .parser(BrowserPerfData.parser())
+            .callBack(perfDataParse);
 
         BufferStream<BrowserPerfData> stream = builder.build();
         stream.initialize();
@@ -62,7 +62,7 @@ public class BrowserPerfDataStandardizationWorker extends AbstractWorker<Browser
 
         MetricsCreator metricsCreator = moduleDefineHolder.find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
         browserPerfDataBufferFileIn = metricsCreator.createCounter("browser_perf_data_buffer_file_in", "The number of browser pert data into the buffer file",
-                MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
+            MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
     }
 
     @Override

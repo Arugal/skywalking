@@ -56,7 +56,8 @@ public class BrowserPerfDataParse {
     private final List<BrowserPerfDataListener> browserPerfDataListeners;
     private final ServiceInstanceInventoryCache serviceInstanceInventoryCache;
     private final BrowserPerfDataCoreInfo browserPerfDataCoreInfo;
-    @Setter private BrowserPerfDataStandardizationWorker standardizationWorker;
+    @Setter
+    private BrowserPerfDataStandardizationWorker standardizationWorker;
     private volatile static CounterMetrics BROWSER_PERF_BUFFER_FILE_RETRY;
     private volatile static CounterMetrics BROWSER_PERF_BUFFER_FILE_OUT;
     private volatile static CounterMetrics BROWSER_PERF_PARSE_ERROR;
@@ -71,11 +72,11 @@ public class BrowserPerfDataParse {
         if (BROWSER_PERF_BUFFER_FILE_RETRY == null) {
             MetricsCreator metricsCreator = moduleManager.find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
             BROWSER_PERF_BUFFER_FILE_RETRY = metricsCreator.createCounter("browser_perf_buffer_file_retry", "The number of retry browser perf from the buffer file, but haven't registered successfully.",
-                    MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
+                MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
             BROWSER_PERF_BUFFER_FILE_OUT = metricsCreator.createCounter("browser_perf_buffer_file_out", "The number of browser perf out of the buffer file",
-                    MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
+                MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
             BROWSER_PERF_PARSE_ERROR = metricsCreator.createCounter("browser_perf_parse_error", "The number of browser perf parse data",
-                    MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
+                MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
         }
 
         this.serviceInstanceInventoryCache = moduleManager.find(CoreModule.NAME).provider().getService(ServiceInstanceInventoryCache.class);
@@ -97,7 +98,7 @@ public class BrowserPerfDataParse {
             if (!preBuild(decorator)) {
                 if (log.isDebugEnabled()) {
                     log.debug("This browser perf data id exchange not success, write to buffer file, serviceId:{}, pagePath:{}",
-                            decorator.getServiceId(), decorator.getPagePath());
+                        decorator.getServiceId(), decorator.getPagePath());
                 }
 
                 if (source.equals(BrowserPerfDataSource.Browser)) {
@@ -109,7 +110,7 @@ public class BrowserPerfDataParse {
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("This browser perf data id exchange success, serviceId: {}, pagePath:{}",
-                            decorator.getServiceId(), decorator.getPagePath());
+                        decorator.getServiceId(), decorator.getPagePath());
                 }
 
                 notifyListenerToBuild();

@@ -24,19 +24,19 @@ import org.apache.skywalking.oap.server.core.source.ScopeDeclaration;
 import org.apache.skywalking.oap.server.core.source.ScopeDefaultColumn;
 import org.apache.skywalking.oap.server.core.source.Source;
 
-import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_CATALOG_NAME;
-import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_PERF_DETAIL;
+import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_INSTANCE_CATALOG_NAME;
+import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.BROWSER_SINGLE_VERSION_PERF_DETAIL;
 
 /**
  * @author zhangwei
  */
-@ScopeDeclaration(id = SERVICE_PERF_DETAIL, name = "ServicePerfDetail", catalog = SERVICE_CATALOG_NAME)
+@ScopeDeclaration(id = BROWSER_SINGLE_VERSION_PERF_DETAIL, name = "ServiceVersionPerfDetail", catalog = SERVICE_INSTANCE_CATALOG_NAME)
 @ScopeDefaultColumn.VirtualColumnDefinition(fieldName = "entityId", columnName = "entity_id", isID = true, type = String.class)
-public class ServicePerfDetail extends Source {
+public class BrowserSingleVersionPerfDetail extends Source {
 
     @Override
     public int scope() {
-        return SERVICE_PERF_DETAIL;
+        return BROWSER_SINGLE_VERSION_PERF_DETAIL;
     }
 
     @Override

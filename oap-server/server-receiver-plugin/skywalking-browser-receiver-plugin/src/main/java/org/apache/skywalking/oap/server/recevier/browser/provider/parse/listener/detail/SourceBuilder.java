@@ -20,7 +20,10 @@ package org.apache.skywalking.oap.server.recevier.browser.provider.parse.listene
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.skywalking.oap.server.core.browser.source.*;
+import org.apache.skywalking.oap.server.core.browser.source.BrowserPagePathPerfDetail;
+import org.apache.skywalking.oap.server.core.browser.source.BrowserPerfDetail;
+import org.apache.skywalking.oap.server.core.browser.source.BrowserSingleVersionPagePathPerfDetail;
+import org.apache.skywalking.oap.server.core.browser.source.BrowserSingleVersionPerfDetail;
 
 /**
  * @author zhangwei
@@ -54,72 +57,68 @@ class SourceBuilder {
         status = !error;
     }
 
-    ServicePerfDetail toServicePerfDetail() {
-        ServicePerfDetail servicePerfDetail = new ServicePerfDetail();
-        servicePerfDetail.setId(serviceId);
-        servicePerfDetail.setName(serviceVersionName);
-        servicePerfDetail.setStatus(status);
-        servicePerfDetail.setRedirectTime(redirectTime);
-        servicePerfDetail.setDnsTime(dnsTime);
-        servicePerfDetail.setReqTime(reqTime);
-        servicePerfDetail.setDomAnalysisTime(domAnalysisTime);
-        servicePerfDetail.setDomReadyTime(domReadyTime);
-        servicePerfDetail.setBlankTime(blankTime);
-        servicePerfDetail.setTimeBucket(minuteTimeBucket);
-        return servicePerfDetail;
+    BrowserPerfDetail toBrowserPerfDetail() {
+        BrowserPerfDetail browserPerfDetail = new BrowserPerfDetail();
+        browserPerfDetail.setId(serviceId);
+        browserPerfDetail.setName(serviceVersionName);
+        browserPerfDetail.setStatus(status);
+        browserPerfDetail.setRedirectTime(redirectTime);
+        browserPerfDetail.setDnsTime(dnsTime);
+        browserPerfDetail.setReqTime(reqTime);
+        browserPerfDetail.setDomAnalysisTime(domAnalysisTime);
+        browserPerfDetail.setDomReadyTime(domReadyTime);
+        browserPerfDetail.setBlankTime(blankTime);
+        browserPerfDetail.setTimeBucket(minuteTimeBucket);
+        return browserPerfDetail;
     }
 
-    ServicePagePathPerfDetail toServicePagePathPerfDetail() {
-        ServicePagePathPerfDetail servicePagePathPerfDetail = new ServicePagePathPerfDetail();
-        servicePagePathPerfDetail.setId(pagePathId);
-        servicePagePathPerfDetail.setName(pagePath);
-        servicePagePathPerfDetail.setServiceId(serviceId);
-        servicePagePathPerfDetail.setServiceName(serviceName);
-        servicePagePathPerfDetail.setStatus(status);
-        servicePagePathPerfDetail.setRedirectTime(redirectTime);
-        servicePagePathPerfDetail.setDnsTime(dnsTime);
-        servicePagePathPerfDetail.setReqTime(reqTime);
-        servicePagePathPerfDetail.setDomAnalysisTime(domAnalysisTime);
-        servicePagePathPerfDetail.setDomReadyTime(domReadyTime);
-        servicePagePathPerfDetail.setBlankTime(blankTime);
-        servicePagePathPerfDetail.setTimeBucket(minuteTimeBucket);
-        return servicePagePathPerfDetail;
+    BrowserPagePathPerfDetail toBrowserPagePathPerfDetail() {
+        BrowserPagePathPerfDetail browserPagePathPerfDetail = new BrowserPagePathPerfDetail();
+        browserPagePathPerfDetail.setId(pagePathId);
+        browserPagePathPerfDetail.setName(pagePath);
+        browserPagePathPerfDetail.setServiceId(serviceId);
+        browserPagePathPerfDetail.setServiceName(serviceName);
+        browserPagePathPerfDetail.setStatus(status);
+        browserPagePathPerfDetail.setRedirectTime(redirectTime);
+        browserPagePathPerfDetail.setDnsTime(dnsTime);
+        browserPagePathPerfDetail.setReqTime(reqTime);
+        browserPagePathPerfDetail.setDomAnalysisTime(domAnalysisTime);
+        browserPagePathPerfDetail.setDomReadyTime(domReadyTime);
+        browserPagePathPerfDetail.setBlankTime(blankTime);
+        browserPagePathPerfDetail.setTimeBucket(minuteTimeBucket);
+        return browserPagePathPerfDetail;
     }
 
-    ServiceVersionPerfDetail toServiceVersionPerfDetail() {
-        ServiceVersionPerfDetail serviceVersionPerfDetail = new ServiceVersionPerfDetail();
-        serviceVersionPerfDetail.setId(serviceVersionId);
-        serviceVersionPerfDetail.setName(serviceVersionName);
-        serviceVersionPerfDetail.setServiceId(serviceId);
-        serviceVersionPerfDetail.setServiceName(serviceVersionName);
-        serviceVersionPerfDetail.setStatus(status);
-        serviceVersionPerfDetail.setRedirectTime(redirectTime);
-        serviceVersionPerfDetail.setDnsTime(dnsTime);
-        serviceVersionPerfDetail.setReqTime(reqTime);
-        serviceVersionPerfDetail.setDomAnalysisTime(domAnalysisTime);
-        serviceVersionPerfDetail.setDomReadyTime(domReadyTime);
-        serviceVersionPerfDetail.setBlankTime(blankTime);
-        serviceVersionPerfDetail.setTimeBucket(minuteTimeBucket);
-        return serviceVersionPerfDetail;
+    BrowserSingleVersionPerfDetail toBrowserSingleVersionPerfDetail() {
+        BrowserSingleVersionPerfDetail browserSingleVersionPerfDetail = new BrowserSingleVersionPerfDetail();
+        browserSingleVersionPerfDetail.setId(serviceVersionId);
+        browserSingleVersionPerfDetail.setName(serviceVersionName);
+        browserSingleVersionPerfDetail.setStatus(status);
+        browserSingleVersionPerfDetail.setRedirectTime(redirectTime);
+        browserSingleVersionPerfDetail.setDnsTime(dnsTime);
+        browserSingleVersionPerfDetail.setReqTime(reqTime);
+        browserSingleVersionPerfDetail.setDomAnalysisTime(domAnalysisTime);
+        browserSingleVersionPerfDetail.setDomReadyTime(domReadyTime);
+        browserSingleVersionPerfDetail.setBlankTime(blankTime);
+        browserSingleVersionPerfDetail.setTimeBucket(minuteTimeBucket);
+        return browserSingleVersionPerfDetail;
     }
 
-    ServiceVersionPagePathPerfDetail toServiceVersionPagePathPerfDetail() {
-        ServiceVersionPagePathPerfDetail serviceVersionPagePathPerfDetail = new ServiceVersionPagePathPerfDetail();
-        serviceVersionPagePathPerfDetail.setId(pagePathId);
-        serviceVersionPagePathPerfDetail.setName(pagePath);
-        serviceVersionPagePathPerfDetail.setServiceId(serviceId);
-        serviceVersionPagePathPerfDetail.setServiceName(serviceName);
-        serviceVersionPagePathPerfDetail.setServiceVersionId(serviceVersionId);
-        serviceVersionPagePathPerfDetail.setServiceVersionName(serviceVersionName);
-        serviceVersionPagePathPerfDetail.setStatus(status);
-        serviceVersionPagePathPerfDetail.setRedirectTime(redirectTime);
-        serviceVersionPagePathPerfDetail.setDnsTime(dnsTime);
-        serviceVersionPagePathPerfDetail.setReqTime(reqTime);
-        serviceVersionPagePathPerfDetail.setDomAnalysisTime(domAnalysisTime);
-        serviceVersionPagePathPerfDetail.setDomReadyTime(domReadyTime);
-        serviceVersionPagePathPerfDetail.setBlankTime(blankTime);
-        serviceVersionPagePathPerfDetail.setTimeBucket(minuteTimeBucket);
-        return serviceVersionPagePathPerfDetail;
+    BrowserSingleVersionPagePathPerfDetail toBrowserSingleVersionPagePathPerfDetail() {
+        BrowserSingleVersionPagePathPerfDetail browserSingleVersionPagePathPerfDetail = new BrowserSingleVersionPagePathPerfDetail();
+        browserSingleVersionPagePathPerfDetail.setId(pagePathId);
+        browserSingleVersionPagePathPerfDetail.setName(pagePath);
+        browserSingleVersionPagePathPerfDetail.setServiceVersionId(serviceVersionId);
+        browserSingleVersionPagePathPerfDetail.setServiceVersionName(serviceVersionName);
+        browserSingleVersionPagePathPerfDetail.setStatus(status);
+        browserSingleVersionPagePathPerfDetail.setRedirectTime(redirectTime);
+        browserSingleVersionPagePathPerfDetail.setDnsTime(dnsTime);
+        browserSingleVersionPagePathPerfDetail.setReqTime(reqTime);
+        browserSingleVersionPagePathPerfDetail.setDomAnalysisTime(domAnalysisTime);
+        browserSingleVersionPagePathPerfDetail.setDomReadyTime(domReadyTime);
+        browserSingleVersionPagePathPerfDetail.setBlankTime(blankTime);
+        browserSingleVersionPagePathPerfDetail.setTimeBucket(minuteTimeBucket);
+        return browserSingleVersionPagePathPerfDetail;
     }
 
 }

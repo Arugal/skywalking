@@ -31,24 +31,16 @@ public abstract class MetaInAlarm {
     public abstract String getMetricsName();
 
     /**
-     * In most scopes, there is only id0, as primary id. Such as Service, Endpoint.
-     * But there are three cases, the ID includes two, actually.
+     * In most scopes, there is only id0, as primary id. Such as Service, Endpoint. But in relation, the ID includes
+     * two, actually. Such as ServiceRelation, id0 represents the sourceScopeId service id
      *
-     * The following:
-     *  1. {@code ServiceRelation}, id0 represents the sourceScopeId service id
-     *  2. {@code ServicePagePathPerfDetail}, id0 represents the service id
-     *  3. {@code ServiceVersionPagePathPerfDetail}, id0 represents the service id
      * @return the primary id.
      */
     public abstract int getId0();
 
     /**
-     * Only exist in multiple IDs case.
+     * Only exist in multiple IDs case, Such as ServiceRelation, id1 represents the dest service id
      *
-     * The following:
-     * 1. {@code ServiceRelation}, id1 represents the dest service id
-     * 2. {@code ServicePagePathPerfDetail}, id1 represents the page path id
-     * 3. {@code ServiceVersionPagePathPerfDetail}, id1 represents the page path id
      * @return
      */
     public abstract int getId1();

@@ -52,10 +52,10 @@ public class MultiScopesPerfDetailDataListener implements BrowserPerfDataListene
 
     @Override
     public void build() {
-        sourceReceiver.receive(sourceBuilder.toServicePerfDetail());
-        sourceReceiver.receive(sourceBuilder.toServicePagePathPerfDetail());
-        sourceReceiver.receive(sourceBuilder.toServiceVersionPerfDetail());
-        sourceReceiver.receive(sourceBuilder.toServiceVersionPagePathPerfDetail());
+        sourceReceiver.receive(sourceBuilder.toBrowserPerfDetail());
+        sourceReceiver.receive(sourceBuilder.toBrowserPagePathPerfDetail());
+        sourceReceiver.receive(sourceBuilder.toBrowserSingleVersionPerfDetail());
+        sourceReceiver.receive(sourceBuilder.toBrowserSingleVersionPagePathPerfDetail());
     }
 
     @Override

@@ -62,14 +62,14 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import static java.util.Objects.nonNull;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_ONE_VERSION_OF_SERVICE_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_ONE_VERSION_OF_SERVICE_MULTIPLE_LINEAR_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_ONE_VERSION_OF_SERVICE_PAGE_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_ONE_VERSION_OF_SERVICE_PAGE_MULTIPLE_LINEAR_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_MULTIPLE_LINEAR_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_PAGE_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_SERVICE_PAGE_MULTIPLE_LINEAR_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_MULTIPLE_LINEAR_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_PAGE_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_PAGE_MULTIPLE_LINEAR_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_SINGLE_VERSION_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_SINGLE_VERSION_MULTIPLE_LINEAR_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_SINGLE_VERSION_PAGE_METRICS;
+import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_SINGLE_VERSION_PAGE_MULTIPLE_LINEAR_METRICS;
 import static org.apache.skywalking.e2e.metrics.MetricsMatcher.verifyMetrics;
 import static org.apache.skywalking.e2e.metrics.MetricsMatcher.verifyPercentileMetrics;
 
@@ -81,9 +81,9 @@ public abstract class BrowserPerfITCase {
 
     private static final int MAX_INBOUND_MESSAGE_SIZE = 1024 * 1024 * 50;
 
-    private static final String SERVICE_NAME = "e2e";
+    private static final String BROWSER_NAME = "e2e";
 
-    private static final String SERVICE_VERSION_NAME = "v1.0.0";
+    private static final String BROWSER_SINGLE_VERSION_NAME = "v1.0.0";
 
     private final int retryInterval = 1000;
 
@@ -93,9 +93,9 @@ public abstract class BrowserPerfITCase {
 
     private BrowserPerfServiceGrpc.BrowserPerfServiceStub browserPerfServiceStub;
 
-    private int serviceId;
+    private int browserId;
 
-    private int serviceVersionId;
+    private int browserSingleVersionId;
 
     @Before
     public void setUp() {
@@ -106,10 +106,10 @@ public abstract class BrowserPerfITCase {
         queryClient = new BrowserQueryClient(swWebappHost, swWebappPort);
 
         final ManagedChannelBuilder builder =
-                NettyChannelBuilder.forAddress(oapHost, Integer.parseInt(oapPort))
-                        .nameResolverFactory(new DnsNameResolverProvider())
-                        .maxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
-                        .usePlaintext();
+            NettyChannelBuilder.forAddress(oapHost, Integer.parseInt(oapPort))
+                .nameResolverFactory(new DnsNameResolverProvider())
+                .maxInboundMessageSize(MAX_INBOUND_MESSAGE_SIZE)
+                .usePlaintext();
 
         final ManagedChannel channel = builder.build();
         registerStub = RegisterGrpc.newBlockingStub(channel);
@@ -124,7 +124,7 @@ public abstract class BrowserPerfITCase {
 
         doRetryableVerification(() -> {
             try {
-                verifyServices(minutesAgo);
+                verifyBrowser(minutesAgo);
             } catch (Exception e) {
                 log.warn(e.getMessage(), e);
                 throw new RuntimeException(e);
@@ -132,13 +132,13 @@ public abstract class BrowserPerfITCase {
         });
     }
 
-    private void verifyServices(LocalDateTime minutesAgo) throws Exception {
+    private void verifyBrowser(LocalDateTime minutesAgo) throws Exception {
         final LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC).plusMinutes(1);
 
         final List<org.apache.skywalking.e2e.service.Service> services = queryClient.browserServices(new ServicesQuery().start(minutesAgo).end(now));
         log.info("services: {}", services);
         InputStream expectedInputStream =
-                new ClassPathResource("expected-data/org.apache.skywalking.e2e.browser.BrowserPerfITCase.services.yml").getInputStream();
+            new ClassPathResource("expected-data/org.apache.skywalking.e2e.browser.BrowserPerfITCase.services.yml").getInputStream();
 
         final ServicesMatcher servicesMatcher = new Yaml().loadAs(expectedInputStream, ServicesMatcher.class);
         servicesMatcher.verify(services);
@@ -146,94 +146,94 @@ public abstract class BrowserPerfITCase {
         for (org.apache.skywalking.e2e.service.Service service : services) {
             log.info("verifying service version: {}", service);
             // service metrics
-            verifyServiceMetrics(minutesAgo, now, service.getKey());
+            verifyBrowserMetrics(minutesAgo, now, service.getKey());
 
             // service version
-            Instances instances = verifyServiceVersions(minutesAgo, now, service);
+            Instances instances = verifyBrowserSingleVersion(minutesAgo, now, service);
 
             // service page path
-            verifyServicePagePaths(service, instances, minutesAgo, now);
+            verifyBrowserPagePath(service, instances, minutesAgo, now);
         }
     }
 
-    private Instances verifyServiceVersions(LocalDateTime minutesAgo, LocalDateTime now, org.apache.skywalking.e2e.service.Service service) throws Exception {
+    private Instances verifyBrowserSingleVersion(LocalDateTime minutesAgo, LocalDateTime now, org.apache.skywalking.e2e.service.Service service) throws Exception {
         Instances instances = queryClient.instances(
-                new InstancesQuery()
-                        .serviceId(service.getKey())
-                        .start(minutesAgo)
-                        .end(now)
+            new InstancesQuery()
+                .serviceId(service.getKey())
+                .start(minutesAgo)
+                .end(now)
         );
         log.info("instances: {}", instances);
         InputStream expectedInputStream =
-                new ClassPathResource("expected-data/org.apache.skywalking.e2e.browser.BrowserPerfITCase.version.yml").getInputStream();
+            new ClassPathResource("expected-data/org.apache.skywalking.e2e.browser.BrowserPerfITCase.version.yml").getInputStream();
         final InstancesMatcher instancesMatcher = new Yaml().loadAs(expectedInputStream, InstancesMatcher.class);
         instancesMatcher.verify(instances);
         // service version metrics
         for (Instance instance : instances.getInstances()) {
-            verifyServiceVersionMetrics(instance, minutesAgo, now);
+            verifyBrowserSingleVersionMetrics(instance, minutesAgo, now);
         }
         return instances;
     }
 
 
-    private Endpoints verifyServicePagePaths(org.apache.skywalking.e2e.service.Service service, Instances instances,
-                                             LocalDateTime minutesAgo, LocalDateTime now) throws Exception {
+    private Endpoints verifyBrowserPagePath(org.apache.skywalking.e2e.service.Service service, Instances instances,
+                                            LocalDateTime minutesAgo, LocalDateTime now) throws Exception {
         Endpoints endpoints = queryClient.endpoints(new EndpointQuery().serviceId(String.valueOf(service.getKey())));
         log.info("endpoints: {}", endpoints);
         InputStream expectedInputStream =
-                new ClassPathResource("expected-data/org.apache.skywalking.e2e.browser.BrowserPerfITCase.pagePath.yml").getInputStream();
+            new ClassPathResource("expected-data/org.apache.skywalking.e2e.browser.BrowserPerfITCase.pagePath.yml").getInputStream();
         final EndpointsMatcher endpointsMatcher = new Yaml().loadAs(expectedInputStream, EndpointsMatcher.class);
         endpointsMatcher.verify(endpoints);
         // service page metrics
         for (Endpoint endpoint : endpoints.getEndpoints()) {
-            verifyServicePagePathMetrics(minutesAgo, now, service, endpoint);
+            verifyBrowserPagePathMetrics(minutesAgo, now, service, endpoint);
 
             // service version page metrics
             for (Instance instance : instances.getInstances()) {
-                verifyServiceVersionPagePathMetrics(minutesAgo, now, instance, endpoint);
+                verifyBrowserSingleVersionPagePathMetrics(minutesAgo, now, instance, endpoint);
             }
         }
         return endpoints;
     }
 
-    private void verifyServiceMetrics(LocalDateTime minutesAgo, LocalDateTime now, String serviceId) throws Exception {
-        for (String metricName : ALL_SERVICE_METRICS) {
+    private void verifyBrowserMetrics(LocalDateTime minutesAgo, LocalDateTime now, String serviceId) throws Exception {
+        for (String metricName : ALL_BROWSER_METRICS) {
             verifyMetrics(queryClient, metricName, serviceId, minutesAgo, now, retryInterval, this::generateTraffic);
         }
 
-        for (String metricName : ALL_SERVICE_MULTIPLE_LINEAR_METRICS) {
+        for (String metricName : ALL_BROWSER_MULTIPLE_LINEAR_METRICS) {
             verifyPercentileMetrics(queryClient, metricName, serviceId, minutesAgo, now, retryInterval, this::generateTraffic);
         }
     }
 
-    private void verifyServiceVersionMetrics(Instance instance, LocalDateTime minutesAgo, LocalDateTime now) throws Exception {
-        for (String metricName : ALL_ONE_VERSION_OF_SERVICE_METRICS) {
+    private void verifyBrowserSingleVersionMetrics(Instance instance, LocalDateTime minutesAgo, LocalDateTime now) throws Exception {
+        for (String metricName : ALL_BROWSER_SINGLE_VERSION_METRICS) {
             verifyMetrics(queryClient, metricName, instance.getKey(), minutesAgo, now, retryInterval, this::generateTraffic);
         }
 
-        for (String metricName : ALL_ONE_VERSION_OF_SERVICE_MULTIPLE_LINEAR_METRICS) {
+        for (String metricName : ALL_BROWSER_SINGLE_VERSION_MULTIPLE_LINEAR_METRICS) {
             verifyPercentileMetrics(queryClient, metricName, instance.getKey(), minutesAgo, now, retryInterval, this::generateTraffic);
         }
     }
 
-    private void verifyServicePagePathMetrics(LocalDateTime minutesAgo, LocalDateTime now, org.apache.skywalking.e2e.service.Service service, Endpoint endpoint) throws Exception {
+    private void verifyBrowserPagePathMetrics(LocalDateTime minutesAgo, LocalDateTime now, org.apache.skywalking.e2e.service.Service service, Endpoint endpoint) throws Exception {
         String id = String.join("_", service.getKey(), endpoint.getKey());
-        for (String metricName : ALL_SERVICE_PAGE_METRICS) {
+        for (String metricName : ALL_BROWSER_PAGE_METRICS) {
             verifyMetrics(queryClient, metricName, id, minutesAgo, now, retryInterval, this::generateTraffic);
         }
 
-        for (String metricName : ALL_SERVICE_PAGE_MULTIPLE_LINEAR_METRICS) {
+        for (String metricName : ALL_BROWSER_PAGE_MULTIPLE_LINEAR_METRICS) {
             verifyPercentileMetrics(queryClient, metricName, id, minutesAgo, now, retryInterval, this::generateTraffic);
         }
     }
 
-    private void verifyServiceVersionPagePathMetrics(LocalDateTime minutesAgo, LocalDateTime now, Instance instance, Endpoint endpoint) throws Exception {
+    private void verifyBrowserSingleVersionPagePathMetrics(LocalDateTime minutesAgo, LocalDateTime now, Instance instance, Endpoint endpoint) throws Exception {
         String id = String.join("_", instance.getKey(), endpoint.getKey());
-        for (String metricName : ALL_ONE_VERSION_OF_SERVICE_PAGE_METRICS) {
+        for (String metricName : ALL_BROWSER_SINGLE_VERSION_PAGE_METRICS) {
             verifyMetrics(queryClient, metricName, id, minutesAgo, now, retryInterval, this::generateTraffic);
         }
 
-        for (String metricName : ALL_ONE_VERSION_OF_SERVICE_PAGE_MULTIPLE_LINEAR_METRICS) {
+        for (String metricName : ALL_BROWSER_SINGLE_VERSION_PAGE_MULTIPLE_LINEAR_METRICS) {
             verifyPercentileMetrics(queryClient, metricName, id, minutesAgo, now, retryInterval, this::generateTraffic);
         }
     }
@@ -253,13 +253,13 @@ public abstract class BrowserPerfITCase {
     private void generateTraffic() {
         try {
             int retryIndex = 0;
-            while (serviceId == 0 || serviceVersionId == 0) {
+            while (browserId == 0 || browserSingleVersionId == 0) {
                 try {
-                    if (serviceId == 0) {
-                        serviceId = registerService();
+                    if (browserId == 0) {
+                        browserId = registerBrowser();
                     }
-                    if (serviceId > 0) {
-                        serviceVersionId = registerServiceVersion(serviceId);
+                    if (browserId > 0) {
+                        browserSingleVersionId = registerBrowserSingleVersion(browserId);
                         break;
                     }
                 } catch (Throwable e) {
@@ -274,26 +274,26 @@ public abstract class BrowserPerfITCase {
                 }
             }
             BrowserPerfData.Builder builder = BrowserPerfData.newBuilder()
-                    .setUniqueId(UUID.randomUUID().toString())
-                    .setServiceId(serviceId)
-                    .setServiceVersionId(serviceVersionId)
-                    .setPagePath("/e2e-browser")
-                    .addLogs(BrowserErrorLog.newBuilder()
-                            .setCatalog("/e2e-browser")
-                            .setMessage("test")
-                            .setLine(1)
-                            .setCol(1)
-                            .setStack("e2e")
-                            .setErrorUrl("/e2e/browser")
-                            .build())
-                    .setPerfDetail(PerfDetail.newBuilder()
-                            .setRedirectTime(10)
-                            .setDnsTime(10)
-                            .setReqTime(10)
-                            .setDomAnalysisTime(10)
-                            .setDomReadyTime(10)
-                            .setBlankTime(10)
-                            .build());
+                .setUniqueId(UUID.randomUUID().toString())
+                .setServiceId(browserId)
+                .setServiceVersionId(browserSingleVersionId)
+                .setPagePath("/e2e-browser")
+                .addLogs(BrowserErrorLog.newBuilder()
+                    .setCatalog("/e2e-browser")
+                    .setMessage("test")
+                    .setLine(1)
+                    .setCol(1)
+                    .setStack("e2e")
+                    .setErrorUrl("/e2e/browser")
+                    .build())
+                .setPerfDetail(PerfDetail.newBuilder()
+                    .setRedirectTime(10)
+                    .setDnsTime(10)
+                    .setReqTime(10)
+                    .setDomAnalysisTime(10)
+                    .setDomReadyTime(10)
+                    .setBlankTime(10)
+                    .build());
             sendBrowserPerfData(builder.build());
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
@@ -325,12 +325,12 @@ public abstract class BrowserPerfITCase {
         latch.await();
     }
 
-    private int registerService() {
+    private int registerBrowser() {
         ServiceRegisterMapping serviceRegisterMapping = registerStub.doServiceRegister(
-                Services.newBuilder().addServices(Service.newBuilder().setServiceName(SERVICE_NAME).setType(ServiceType.browser).build()).build());
+            Services.newBuilder().addServices(Service.newBuilder().setServiceName(BROWSER_NAME).setType(ServiceType.browser).build()).build());
         if (nonNull(serviceRegisterMapping)) {
             for (KeyIntValuePair registered : serviceRegisterMapping.getServicesList()) {
-                if (SERVICE_NAME.equals(registered.getKey())) {
+                if (BROWSER_NAME.equals(registered.getKey())) {
                     return registered.getValue();
                 }
             }
@@ -338,12 +338,12 @@ public abstract class BrowserPerfITCase {
         return 0;
     }
 
-    private int registerServiceVersion(int serviceId) {
+    private int registerBrowserSingleVersion(int serviceId) {
         ServiceInstanceRegisterMapping instanceRegisterMapping = registerStub.doServiceInstanceRegister(ServiceInstances.newBuilder()
-                .addInstances(ServiceInstance.newBuilder().setServiceId(serviceId).setInstanceUUID(SERVICE_VERSION_NAME).build()).build());
+            .addInstances(ServiceInstance.newBuilder().setServiceId(serviceId).setInstanceUUID(BROWSER_SINGLE_VERSION_NAME).build()).build());
         if (nonNull(instanceRegisterMapping)) {
             for (KeyIntValuePair registered : instanceRegisterMapping.getServiceInstancesList()) {
-                if (SERVICE_VERSION_NAME.equals(registered.getKey())) {
+                if (BROWSER_SINGLE_VERSION_NAME.equals(registered.getKey())) {
                     return registered.getValue();
                 }
             }

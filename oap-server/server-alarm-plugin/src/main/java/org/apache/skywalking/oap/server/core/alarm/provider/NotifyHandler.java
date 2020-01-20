@@ -84,7 +84,7 @@ public class NotifyHandler implements MetricsNotify {
 
             endpointMetaInAlarm.setName(textName);
             metaInAlarm = endpointMetaInAlarm;
-        } else if (DefaultScopeDefine.inServicePageCatalog(scope)) {
+        } else if (DefaultScopeDefine.inBrowserPageCatalog(scope)) {
             String metricsId = meta.getId();
             String[] ids = metricsId.split(Const.ID_SPLIT);
             int serviceId = Integer.parseInt(ids[0]);
@@ -94,13 +94,12 @@ public class NotifyHandler implements MetricsNotify {
 
             ServicePageMetaInAlarm servicePageMetaInAlarm = new ServicePageMetaInAlarm();
             servicePageMetaInAlarm.setMetricsName(meta.getMetricsName());
-            servicePageMetaInAlarm.setServiceId(serviceId);
-            servicePageMetaInAlarm.setPagePathId(pagePathId);
+            servicePageMetaInAlarm.setId(pagePathId);
 
             String textName = endpointInventory.getName() + " in " + serviceInventory.getName();
             servicePageMetaInAlarm.setName(textName);
             metaInAlarm = servicePageMetaInAlarm;
-        } else if (DefaultScopeDefine.inServiceVersionCatalog(scope)) {
+        } else if (DefaultScopeDefine.inBrowserSingleVersionCatalog(scope)) {
             String metricsId = meta.getId();
             String[] ids = metricsId.split(Const.ID_SPLIT);
             int serviceVersionId = Integer.parseInt(ids[0]);
@@ -110,8 +109,7 @@ public class NotifyHandler implements MetricsNotify {
 
             ServiceVersionPageMetaInAlarm versionPageMetaInAlarm = new ServiceVersionPageMetaInAlarm();
             versionPageMetaInAlarm.setMetricsName(meta.getMetricsName());
-            versionPageMetaInAlarm.setServiceVersionId(serviceVersionId);
-            versionPageMetaInAlarm.setPatePathId(pagePathId);
+            versionPageMetaInAlarm.setId(pagePathId);
 
             String textName = endpointInventory.getName() + " in " + serviceInstanceInventory.getName();
             versionPageMetaInAlarm.setName(textName);

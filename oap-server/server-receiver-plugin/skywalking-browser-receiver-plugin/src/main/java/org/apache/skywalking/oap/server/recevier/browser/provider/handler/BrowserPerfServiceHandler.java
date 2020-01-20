@@ -44,7 +44,7 @@ public class BrowserPerfServiceHandler extends BrowserPerfServiceGrpc.BrowserPer
         this.browserPerfProducer = browserPerfProducer;
         MetricsCreator metricsCreator = moduleManager.find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
         histogram = metricsCreator.createHistogramMetric("browser_perf_grpc_in_latency", "The process browser perf data",
-                MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
+            MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
     }
 
     @Override

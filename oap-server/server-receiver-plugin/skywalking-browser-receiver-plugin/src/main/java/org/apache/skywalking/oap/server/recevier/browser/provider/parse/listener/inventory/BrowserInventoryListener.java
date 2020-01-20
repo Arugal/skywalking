@@ -44,7 +44,7 @@ public class BrowserInventoryListener implements BrowserPerfDataListener {
 
     @Override
     public void build() {
-        // TODO Sample
+        // TODO Support sample
         serviceInventoryRegister.heartbeat(coreInfo.getServiceId(), coreInfo.getTime());
         serviceInstanceInventoryRegister.heartbeat(coreInfo.getServiceVersionId(), coreInfo.getTime());
     }

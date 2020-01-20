@@ -25,140 +25,140 @@ import org.apache.skywalking.e2e.metrics.MetricsQuery;
  */
 public class BrowserMetricsQuery extends MetricsQuery {
 
-    public static final String SERVICE_REDIRECT_AVG = "service_redirect_avg";
-    public static final String SERVICE_DNS_AVG = "service_dns_avg";
-    public static final String SERVICE_REQ_AVG = "service_req_avg";
-    public static final String SERVICE_DOM_ANALYSIS_AVG = "service_dom_analysis_avg";
-    public static final String SERVICE_DOM_READY_AVG = "service_dom_ready_avg";
-    public static final String SERVICE_BLANK_AVG = "service_blank_avg";
+    public static final String BROWSER_REDIRECT_AVG = "browser_redirect_avg";
+    public static final String BROWSER_DNS_AVG = "browser_dns_avg";
+    public static final String BROWSER_REQ_AVG = "browser_req_avg";
+    public static final String BROWSER_DOM_ANALYSIS_AVG = "browser_dom_analysis_avg";
+    public static final String BROWSER_DOM_READY_AVG = "browser_dom_ready_avg";
+    public static final String BROWSER_BLANK_AVG = "browser_blank_avg";
 
-    public static final String[] ALL_SERVICE_METRICS = {
-            SERVICE_REDIRECT_AVG,
-            SERVICE_DNS_AVG,
-            SERVICE_REQ_AVG,
-            SERVICE_DOM_ANALYSIS_AVG,
-            SERVICE_DOM_READY_AVG,
-            SERVICE_BLANK_AVG
+    public static final String[] ALL_BROWSER_METRICS = {
+        BROWSER_REDIRECT_AVG,
+        BROWSER_DNS_AVG,
+        BROWSER_REQ_AVG,
+        BROWSER_DOM_ANALYSIS_AVG,
+        BROWSER_DOM_READY_AVG,
+        BROWSER_BLANK_AVG
     };
 
-    public static final String SERVICE_REDIRECT_PERCENTILE = "service_redirect_percentile";
-    public static final String SERVICE_DNS_PERCENTILE = "service_dns_percentile";
-    public static final String SERVICE_REQ_PERCENTILE = "service_req_percentile";
-    public static final String SERVICE_DOM_ANALYSIS_PERCENTILE = "service_dom_analysis_percentile";
-    public static final String SERVICE_DOM_READY_PERCENTILE = "service_dom_ready_percentile";
-    public static final String SERVICE_BLANK_PERCENTILE = "service_blank_percentile";
+    public static final String BROWSER_REDIRECT_PERCENTILE = "browser_redirect_percentile";
+    public static final String BROWSER_DNS_PERCENTILE = "browser_dns_percentile";
+    public static final String BROWSER_REQ_PERCENTILE = "browser_req_percentile";
+    public static final String BROWSER_DOM_ANALYSIS_PERCENTILE = "browser_dom_analysis_percentile";
+    public static final String BROWSER_DOM_READY_PERCENTILE = "browser_dom_ready_percentile";
+    public static final String BROWSER_BLANK_PERCENTILE = "browser_blank_percentile";
 
-    public static final String[] ALL_SERVICE_MULTIPLE_LINEAR_METRICS = {
-            SERVICE_REDIRECT_PERCENTILE,
-            SERVICE_DNS_PERCENTILE,
-            SERVICE_REQ_PERCENTILE,
-            SERVICE_DOM_ANALYSIS_PERCENTILE,
-            SERVICE_DOM_READY_PERCENTILE,
-            SERVICE_BLANK_PERCENTILE
+    public static final String[] ALL_BROWSER_MULTIPLE_LINEAR_METRICS = {
+        BROWSER_REDIRECT_PERCENTILE,
+        BROWSER_DNS_PERCENTILE,
+        BROWSER_REQ_PERCENTILE,
+        BROWSER_DOM_ANALYSIS_PERCENTILE,
+        BROWSER_DOM_READY_PERCENTILE,
+        BROWSER_BLANK_PERCENTILE
     };
 
-    public static final String SERVICE_PAGE_PV = "service_page_pv";
-    public static final String SERVICE_PAGE_ERROR_RATE = "service_page_error_rate";
-    public static final String SERVICE_PAGE_REDIRECT_AVG = "service_page_redirect_avg";
-    public static final String SERVICE_PAGE_DNS_AVG = "service_page_dns_avg";
-    public static final String SERVICE_PAGE_REQ_AVG = "service_page_req_avg";
-    public static final String SERVICE_PAGE_DOM_ANALYSIS_AVG = "service_page_dom_analysis_avg";
-    public static final String SERVICE_PAGE_DOM_READY_AVG = "service_page_dom_ready_avg";
-    public static final String SERVICE_PAGE_BLANK_AVG = "service_page_blank_avg";
+    public static final String BROWSER_PAGE_PV = "browser_page_pv";
+    public static final String BROWSER_PAGE_ERROR_RATE = "browser_page_error_rate";
+    public static final String BROWSER_PAGE_REDIRECT_AVG = "browser_page_redirect_avg";
+    public static final String BROWSER_PAGE_DNS_AVG = "browser_page_dns_avg";
+    public static final String BROWSER_PAGE_REQ_AVG = "browser_page_req_avg";
+    public static final String BROWSER_PAGE_DOM_ANALYSIS_AVG = "browser_page_dom_analysis_avg";
+    public static final String BROWSER_PAGE_DOM_READY_AVG = "browser_page_dom_ready_avg";
+    public static final String BROWSER_PAGE_BLANK_AVG = "browser_page_blank_avg";
 
-    public static final String[] ALL_SERVICE_PAGE_METRICS = {
-            SERVICE_PAGE_PV,
-            SERVICE_PAGE_ERROR_RATE,
-            SERVICE_PAGE_REDIRECT_AVG,
-            SERVICE_PAGE_DNS_AVG,
-            SERVICE_PAGE_REQ_AVG,
-            SERVICE_PAGE_DOM_ANALYSIS_AVG,
-            SERVICE_PAGE_DOM_READY_AVG,
-            SERVICE_PAGE_BLANK_AVG
+    public static final String[] ALL_BROWSER_PAGE_METRICS = {
+        BROWSER_PAGE_PV,
+        BROWSER_PAGE_ERROR_RATE,
+        BROWSER_PAGE_REDIRECT_AVG,
+        BROWSER_PAGE_DNS_AVG,
+        BROWSER_PAGE_REQ_AVG,
+        BROWSER_PAGE_DOM_ANALYSIS_AVG,
+        BROWSER_PAGE_DOM_READY_AVG,
+        BROWSER_PAGE_BLANK_AVG
     };
 
-    public static final String SERVICE_PAGE_REDIRECT_PERCENTILE = "service_page_redirect_percentile";
-    public static final String SERVICE_PAGE_DNS_PERCENTILE = "service_page_dns_percentile";
-    public static final String SERVICE_PAGE_REQ_PERCENTILE = "service_page_req_percentile";
-    public static final String SERVICE_PAGE_DOM_ANALYSIS_PERCENTILE = "service_page_dom_analysis_percentile";
-    public static final String SERVICE_PAGE_DOM_READY_PERCENTILE = "service_page_dom_ready_percentile";
-    public static final String SERVICE_PAGE_BLANK_PERCENTILE = "service_page_blank_percentile";
+    public static final String BROWSER_PAGE_REDIRECT_PERCENTILE = "browser_page_redirect_percentile";
+    public static final String BROWSER_PAGE_DNS_PERCENTILE = "browser_page_dns_percentile";
+    public static final String BROWSER_PAGE_REQ_PERCENTILE = "browser_page_req_percentile";
+    public static final String BROWSER_PAGE_DOM_ANALYSIS_PERCENTILE = "browser_page_dom_analysis_percentile";
+    public static final String BROWSER_PAGE_DOM_READY_PERCENTILE = "browser_page_dom_ready_percentile";
+    public static final String BROWSER_PAGE_BLANK_PERCENTILE = "browser_page_blank_percentile";
 
-    public static final String[] ALL_SERVICE_PAGE_MULTIPLE_LINEAR_METRICS = {
-            SERVICE_PAGE_REDIRECT_PERCENTILE,
-            SERVICE_PAGE_DNS_PERCENTILE,
-            SERVICE_PAGE_REQ_PERCENTILE,
-            SERVICE_PAGE_DOM_ANALYSIS_PERCENTILE,
-            SERVICE_PAGE_DOM_READY_PERCENTILE,
-            SERVICE_PAGE_BLANK_PERCENTILE
+    public static final String[] ALL_BROWSER_PAGE_MULTIPLE_LINEAR_METRICS = {
+        BROWSER_PAGE_REDIRECT_PERCENTILE,
+        BROWSER_PAGE_DNS_PERCENTILE,
+        BROWSER_PAGE_REQ_PERCENTILE,
+        BROWSER_PAGE_DOM_ANALYSIS_PERCENTILE,
+        BROWSER_PAGE_DOM_READY_PERCENTILE,
+        BROWSER_PAGE_BLANK_PERCENTILE
     };
 
-    public static final String ONE_VERSION_OF_SERVICE_REDIRECT_AVG = "one_version_of_service_redirect_avg";
-    public static final String ONE_VERSION_OF_SERVICE_DNS_AVG = "one_version_of_service_dns_avg";
-    public static final String ONE_VERSION_OF_SERVICE_REQ_AVG = "one_version_of_service_req_avg";
-    public static final String ONE_VERSION_OF_SERVICE_DOM_ANALYSIS_AVG = "one_version_of_service_dom_analysis_avg";
-    public static final String ONE_VERSION_OF_SERVICE_DOM_READY_AVG = "one_version_of_service_dom_ready_avg";
-    public static final String ONE_VERSION_OF_SERVICE_BLANK_AVG = "one_version_of_service_blank_avg";
+    public static final String BROWSER_SINGLE_VERSION_REDIRECT_AVG = "browser_single_version_redirect_avg";
+    public static final String BROWSER_SINGLE_VERSION_DNS_AVG = "browser_single_version_dns_avg";
+    public static final String BROWSER_SINGLE_VERSION_REQ_AVG = "browser_single_version_req_avg";
+    public static final String BROWSER_SINGLE_VERSION_DOM_ANALYSIS_AVG = "browser_single_version_dom_analysis_avg";
+    public static final String BROWSER_SINGLE_VERSION_DOM_READY_AVG = "browser_single_version_dom_ready_avg";
+    public static final String BROWSER_SINGLE_VERSION_BLANK_AVG = "browser_single_version_blank_avg";
 
-    public static final String[] ALL_ONE_VERSION_OF_SERVICE_METRICS = {
-            ONE_VERSION_OF_SERVICE_REDIRECT_AVG,
-            ONE_VERSION_OF_SERVICE_DNS_AVG,
-            ONE_VERSION_OF_SERVICE_REQ_AVG,
-            ONE_VERSION_OF_SERVICE_DOM_ANALYSIS_AVG,
-            ONE_VERSION_OF_SERVICE_DOM_READY_AVG,
-            ONE_VERSION_OF_SERVICE_BLANK_AVG
+    public static final String[] ALL_BROWSER_SINGLE_VERSION_METRICS = {
+        BROWSER_SINGLE_VERSION_REDIRECT_AVG,
+        BROWSER_SINGLE_VERSION_DNS_AVG,
+        BROWSER_SINGLE_VERSION_REQ_AVG,
+        BROWSER_SINGLE_VERSION_DOM_ANALYSIS_AVG,
+        BROWSER_SINGLE_VERSION_DOM_READY_AVG,
+        BROWSER_SINGLE_VERSION_BLANK_AVG
     };
 
-    public static final String ONE_VERSION_OF_SERVICE_REDIRECT_PERCENTILE = "one_version_of_service_redirect_percentile";
-    public static final String ONE_VERSION_OF_SERVICE_DNS_PERCENTILE = "one_version_of_service_dns_percentile";
-    public static final String ONE_VERSION_OF_SERVICE_REQ_PERCENTILE = "one_version_of_service_req_percentile";
-    public static final String ONE_VERSION_OF_SERVICE_DOM_ANALYSIS_PERCENTILE = "one_version_of_service_dom_analysis_percentile";
-    public static final String ONE_VERSION_OF_SERVICE_DOM_READY_PERCENTILE = "one_version_of_service_dom_ready_percentile";
-    public static final String ONE_VERSION_OF_SERVICE_BLANK_PERCENTILE = "one_version_of_service_blank_percentile";
+    public static final String BROWSER_SINGLE_VERSION_REDIRECT_PERCENTILE = "browser_single_version_redirect_percentile";
+    public static final String BROWSER_SINGLE_VERSION_DNS_PERCENTILE = "browser_single_version_dns_percentile";
+    public static final String BROWSER_SINGLE_VERSION_REQ_PERCENTILE = "browser_single_version_req_percentile";
+    public static final String BROWSER_SINGLE_VERSION_DOM_ANALYSIS_PERCENTILE = "browser_single_version_dom_analysis_percentile";
+    public static final String BROWSER_SINGLE_VERSION_DOM_READY_PERCENTILE = "browser_single_version_dom_ready_percentile";
+    public static final String BROWSER_SINGLE_VERSION_BLANK_PERCENTILE = "browser_single_version_blank_percentile";
 
-    public static final String[] ALL_ONE_VERSION_OF_SERVICE_MULTIPLE_LINEAR_METRICS = {
-            ONE_VERSION_OF_SERVICE_REDIRECT_PERCENTILE,
-            ONE_VERSION_OF_SERVICE_DNS_PERCENTILE,
-            ONE_VERSION_OF_SERVICE_REQ_PERCENTILE,
-            ONE_VERSION_OF_SERVICE_DOM_ANALYSIS_PERCENTILE,
-            ONE_VERSION_OF_SERVICE_DOM_READY_PERCENTILE,
-            ONE_VERSION_OF_SERVICE_BLANK_PERCENTILE
+    public static final String[] ALL_BROWSER_SINGLE_VERSION_MULTIPLE_LINEAR_METRICS = {
+        BROWSER_SINGLE_VERSION_REDIRECT_PERCENTILE,
+        BROWSER_SINGLE_VERSION_DNS_PERCENTILE,
+        BROWSER_SINGLE_VERSION_REQ_PERCENTILE,
+        BROWSER_SINGLE_VERSION_DOM_ANALYSIS_PERCENTILE,
+        BROWSER_SINGLE_VERSION_DOM_READY_PERCENTILE,
+        BROWSER_SINGLE_VERSION_BLANK_PERCENTILE
     };
 
 
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_PV = "one_version_of_service_page_pv";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_ERROR_RATE = "one_version_of_service_page_error_rate";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_REDIRECT_AVG = "one_version_of_service_page_redirect_avg";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_DNS_AVG = "one_version_of_service_page_dns_avg";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_REQ_AVG = "one_version_of_service_page_req_avg";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_DOM_ANALYSIS_AVG = "one_version_of_service_page_dom_analysis_avg";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_DOM_READY_AVG = "one_version_of_service_page_dom_ready_avg";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_BLANK_AVG = "one_version_of_service_page_blank_avg";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_PV = "browser_single_version_page_pv";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_ERROR_RATE = "browser_single_version_page_error_rate";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_REDIRECT_AVG = "browser_single_version_page_redirect_avg";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_DNS_AVG = "browser_single_version_page_dns_avg";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_REQ_AVG = "browser_single_version_page_req_avg";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_DOM_ANALYSIS_AVG = "browser_single_version_page_dom_analysis_avg";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_DOM_READY_AVG = "browser_single_version_page_dom_ready_avg";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_BLANK_AVG = "browser_single_version_page_blank_avg";
 
-    public static final String[] ALL_ONE_VERSION_OF_SERVICE_PAGE_METRICS = {
-            ONE_VERSION_OF_SERVICE_PAGE_PV,
-            ONE_VERSION_OF_SERVICE_PAGE_ERROR_RATE,
-            ONE_VERSION_OF_SERVICE_PAGE_REDIRECT_AVG,
-            ONE_VERSION_OF_SERVICE_PAGE_DNS_AVG,
-            ONE_VERSION_OF_SERVICE_PAGE_REQ_AVG,
-            ONE_VERSION_OF_SERVICE_PAGE_DOM_ANALYSIS_AVG,
-            ONE_VERSION_OF_SERVICE_PAGE_DOM_READY_AVG,
-            ONE_VERSION_OF_SERVICE_PAGE_BLANK_AVG
+    public static final String[] ALL_BROWSER_SINGLE_VERSION_PAGE_METRICS = {
+        BROWSER_SINGLE_VERSION_PAGE_PV,
+        BROWSER_SINGLE_VERSION_PAGE_ERROR_RATE,
+        BROWSER_SINGLE_VERSION_PAGE_REDIRECT_AVG,
+        BROWSER_SINGLE_VERSION_PAGE_DNS_AVG,
+        BROWSER_SINGLE_VERSION_PAGE_REQ_AVG,
+        BROWSER_SINGLE_VERSION_PAGE_DOM_ANALYSIS_AVG,
+        BROWSER_SINGLE_VERSION_PAGE_DOM_READY_AVG,
+        BROWSER_SINGLE_VERSION_PAGE_BLANK_AVG
     };
 
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_REDIRECT_PERCENTILE = "one_version_of_service_page_redirect_percentile";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_DNS_PERCENTILE = "one_version_of_service_page_dns_percentile";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_REQ_PERCENTILE = "one_version_of_service_page_req_percentile";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_DOM_ANALYSIS_PERCENTILE = "one_version_of_service_page_dom_analysis_percentile";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_DOM_READY_PERCENTILE = "one_version_of_service_page_dom_ready_percentile";
-    public static final String ONE_VERSION_OF_SERVICE_PAGE_BLANK_PERCENTILE = "one_version_of_service_page_blank_percentile";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_REDIRECT_PERCENTILE = "browser_single_version_page_redirect_percentile";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_DNS_PERCENTILE = "browser_single_version_page_dns_percentile";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_REQ_PERCENTILE = "browser_single_version_page_req_percentile";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_DOM_ANALYSIS_PERCENTILE = "browser_single_version_page_dom_analysis_percentile";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_DOM_READY_PERCENTILE = "browser_single_version_page_dom_ready_percentile";
+    public static final String BROWSER_SINGLE_VERSION_PAGE_BLANK_PERCENTILE = "browser_single_version_page_blank_percentile";
 
-    public static final String[] ALL_ONE_VERSION_OF_SERVICE_PAGE_MULTIPLE_LINEAR_METRICS = {
-            ONE_VERSION_OF_SERVICE_PAGE_REDIRECT_PERCENTILE,
-            ONE_VERSION_OF_SERVICE_PAGE_DNS_PERCENTILE,
-            ONE_VERSION_OF_SERVICE_PAGE_REQ_PERCENTILE,
-            ONE_VERSION_OF_SERVICE_PAGE_DOM_ANALYSIS_PERCENTILE,
-            ONE_VERSION_OF_SERVICE_PAGE_DOM_READY_PERCENTILE,
-            ONE_VERSION_OF_SERVICE_PAGE_BLANK_PERCENTILE
+    public static final String[] ALL_BROWSER_SINGLE_VERSION_PAGE_MULTIPLE_LINEAR_METRICS = {
+        BROWSER_SINGLE_VERSION_PAGE_REDIRECT_PERCENTILE,
+        BROWSER_SINGLE_VERSION_PAGE_DNS_PERCENTILE,
+        BROWSER_SINGLE_VERSION_PAGE_REQ_PERCENTILE,
+        BROWSER_SINGLE_VERSION_PAGE_DOM_ANALYSIS_PERCENTILE,
+        BROWSER_SINGLE_VERSION_PAGE_DOM_READY_PERCENTILE,
+        BROWSER_SINGLE_VERSION_PAGE_BLANK_PERCENTILE
     };
 }

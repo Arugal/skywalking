@@ -31,28 +31,27 @@ import org.apache.skywalking.oap.server.core.source.DefaultScopeDefine;
 public class ServiceVersionPageMetaInAlarm extends MetaInAlarm {
 
     private String metricsName;
-    private int serviceVersionId;
-    private int patePathId;
+    private int id;
     private String name;
 
 
     @Override
     public String getScope() {
-        return DefaultScopeDefine.SERVICE_VERSION_PAGE_PATH_CATALOG_NAME;
+        return DefaultScopeDefine.BROWSER_SINGLE_VERSION_PAGE_PATH_CATALOG_NAME;
     }
 
     @Override
     public int getScopeId() {
-        return DefaultScopeDefine.SERVICE_VERSION_PAGE_PATH_PERF_DETAIL;
+        return DefaultScopeDefine.BROWSER_SINGLE_VERSION_PAGE_PATH_PERF_DETAIL;
     }
 
     @Override
     public int getId0() {
-        return serviceVersionId;
+        return id;
     }
 
     @Override
     public int getId1() {
-        return patePathId;
+        return 0;
     }
 }

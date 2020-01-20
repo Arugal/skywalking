@@ -20,28 +20,29 @@ package org.apache.skywalking.oap.server.core.browser.source;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.skywalking.oap.server.core.Const;
 import org.apache.skywalking.oap.server.core.source.ScopeDeclaration;
 import org.apache.skywalking.oap.server.core.source.ScopeDefaultColumn;
 import org.apache.skywalking.oap.server.core.source.Source;
 
-import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_INSTANCE_CATALOG_NAME;
-import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_VERSION_PERF_DETAIL;
+import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.BROWSER_PAGE_PATH_CATALOG_NAME;
+import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.BROWSER_PAGE_PATH_PERF_DETAIL;
 
 /**
  * @author zhangwei
  */
-@ScopeDeclaration(id = SERVICE_VERSION_PERF_DETAIL, name = "ServiceVersionPerfDetail", catalog = SERVICE_INSTANCE_CATALOG_NAME)
+@ScopeDeclaration(id = BROWSER_PAGE_PATH_PERF_DETAIL, name = "ServicePagePathPerfDetail", catalog = BROWSER_PAGE_PATH_CATALOG_NAME)
 @ScopeDefaultColumn.VirtualColumnDefinition(fieldName = "entityId", columnName = "entity_id", isID = true, type = String.class)
-public class ServiceVersionPerfDetail extends Source {
+public class BrowserPagePathPerfDetail extends Source {
 
     @Override
     public int scope() {
-        return SERVICE_VERSION_PERF_DETAIL;
+        return BROWSER_PAGE_PATH_PERF_DETAIL;
     }
 
     @Override
     public String getEntityId() {
-        return String.valueOf(id);
+        return serviceId + Const.ID_SPLIT + id;
     }
 
     @Getter @Setter private int id;
@@ -49,6 +50,7 @@ public class ServiceVersionPerfDetail extends Source {
     @Getter @Setter @ScopeDefaultColumn.DefinedByField(columnName = "service_id") private int serviceId;
     @Getter @Setter private String serviceName;
     @Getter @Setter private boolean status;
+    @Getter private final int count = 1;
     @Getter @Setter private int redirectTime;
     @Getter @Setter private int dnsTime;
     @Getter @Setter private int reqTime;

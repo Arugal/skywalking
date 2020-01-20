@@ -25,30 +25,29 @@ import org.apache.skywalking.oap.server.core.source.ScopeDeclaration;
 import org.apache.skywalking.oap.server.core.source.ScopeDefaultColumn;
 import org.apache.skywalking.oap.server.core.source.Source;
 
-import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_PAGE_PATH_PERF_DETAIL;
-import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.SERVICE_PAGE_PATH_CATALOG_NAME;
+import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.BROWSER_SINGLE_VERSION_PAGE_PATH_CATALOG_NAME;
+import static org.apache.skywalking.oap.server.core.source.DefaultScopeDefine.BROWSER_SINGLE_VERSION_PAGE_PATH_PERF_DETAIL;
 
 /**
  * @author zhangwei
  */
-@ScopeDeclaration(id = SERVICE_PAGE_PATH_PERF_DETAIL, name = "ServicePagePathPerfDetail", catalog = SERVICE_PAGE_PATH_CATALOG_NAME)
+@ScopeDeclaration(id = BROWSER_SINGLE_VERSION_PAGE_PATH_PERF_DETAIL, name = "ServiceVersionPagePathPerfDetail", catalog = BROWSER_SINGLE_VERSION_PAGE_PATH_CATALOG_NAME)
 @ScopeDefaultColumn.VirtualColumnDefinition(fieldName = "entityId", columnName = "entity_id", isID = true, type = String.class)
-public class ServicePagePathPerfDetail extends Source {
-
+public class BrowserSingleVersionPagePathPerfDetail extends Source {
     @Override
     public int scope() {
-        return SERVICE_PAGE_PATH_PERF_DETAIL;
+        return BROWSER_SINGLE_VERSION_PAGE_PATH_PERF_DETAIL;
     }
 
     @Override
     public String getEntityId() {
-        return serviceId + Const.ID_SPLIT + id;
+        return serviceVersionId + Const.ID_SPLIT + id;
     }
 
     @Getter @Setter private int id;
     @Getter @Setter private String name;
-    @Getter @Setter @ScopeDefaultColumn.DefinedByField(columnName = "service_id") private int serviceId;
-    @Getter @Setter private String serviceName;
+    @Getter @Setter @ScopeDefaultColumn.DefinedByField(columnName = "service_version_id") private int serviceVersionId;
+    @Getter @Setter private String serviceVersionName;
     @Getter @Setter private boolean status;
     @Getter private final int count = 1;
     @Getter @Setter private int redirectTime;
