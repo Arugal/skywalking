@@ -31,12 +31,16 @@ import org.apache.skywalking.oap.server.library.module.ServiceNotProvidedExcepti
 import org.apache.skywalking.oap.server.receiver.sharing.server.SharingServerModule;
 import org.apache.skywalking.oap.server.recevier.browser.module.BrowserModule;
 import org.apache.skywalking.oap.server.recevier.browser.provider.handler.BrowserPerfServiceHandler;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfDataParse;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfDataParseListenerManager;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.detail.MultiScopesPerfDetailDataListener;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.errorlog.BrowserErrorLogListener;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.listener.inventory.BrowserInventoryListener;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.standardization.BrowserPerfDataStandardizationWorker;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.errorlog.BrowserErrorLogParser;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.errorlog.BrowserErrorLogParserListenerManager;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.errorlog.listener.errorlog.MultiScopesBrowserAppErrorLogListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.errorlog.listener.record.BrowserErrorLogRecordListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.errorlog.standardization.BrowserErrorLogStandardizationWorker;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.performance.BrowserPerfDataParseListenerManager;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.performance.BrowserPerfDataParser;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.performance.listener.inventory.BrowserHeartbeatListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.performance.listener.performance.MultiScopesBrowserAppPerfListener;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.performance.standardization.BrowserPerfDataStandardizationWorker;
 import org.apache.skywalking.oap.server.telemetry.TelemetryModule;
 
 import java.io.IOException;
@@ -47,7 +51,8 @@ import java.io.IOException;
 public class BrowserModuleProvider extends ModuleProvider {
 
     private final BrowserServiceModuleConfig moduleConfig = new BrowserServiceModuleConfig();
-    private BrowserPerfDataParse.Producer browserPerfProducer;
+    private BrowserPerfDataParser.Producer browserPerfDataProducer;
+    private BrowserErrorLogParser.Producer browserErrorLogProducer;
 
     @Override
     public String name() {
@@ -66,16 +71,24 @@ public class BrowserModuleProvider extends ModuleProvider {
 
     @Override
     public void prepare() throws ServiceNotProvidedException {
-        browserPerfProducer = new BrowserPerfDataParse.Producer(getManager(), listenerManager(), moduleConfig);
+        browserPerfDataProducer = new BrowserPerfDataParser.Producer(getManager(), performanceListenerManager(), moduleConfig);
+        browserErrorLogProducer = new BrowserErrorLogParser.Producer(getManager(), errorLogListenerManager(), moduleConfig);
     }
 
-    public BrowserPerfDataParseListenerManager listenerManager() {
+    private BrowserPerfDataParseListenerManager performanceListenerManager() {
         BrowserPerfDataParseListenerManager listenerManager = new BrowserPerfDataParseListenerManager();
-        listenerManager.add(new MultiScopesPerfDetailDataListener.Factory());
-        listenerManager.add(new BrowserErrorLogListener.Factory(moduleConfig.getSampleRate()));
-        listenerManager.add(new BrowserInventoryListener.Factory());
+        listenerManager.add(new MultiScopesBrowserAppPerfListener.Factory());
+        listenerManager.add(new BrowserHeartbeatListener.Factory());
         return listenerManager;
     }
+
+    private BrowserErrorLogParserListenerManager errorLogListenerManager() {
+        BrowserErrorLogParserListenerManager listenerManager = new BrowserErrorLogParserListenerManager();
+        listenerManager.add(new BrowserErrorLogRecordListener.Factory(moduleConfig.getSampleRate()));
+        listenerManager.add(new MultiScopesBrowserAppErrorLogListener.Factory());
+        return listenerManager;
+    }
+
 
     @Override
     public void start() throws ServiceNotProvidedException, ModuleStartException {
@@ -83,11 +96,19 @@ public class BrowserModuleProvider extends ModuleProvider {
 
         GRPCHandlerRegister grpcHandlerRegister = getManager().find(SharingServerModule.NAME).provider().getService(GRPCHandlerRegister.class);
         try {
+            grpcHandlerRegister.addHandler(new BrowserPerfServiceHandler(browserPerfDataProducer, browserErrorLogProducer, getManager()));
 
-            grpcHandlerRegister.addHandler(new BrowserPerfServiceHandler(browserPerfProducer, getManager()));
-            BrowserPerfDataStandardizationWorker standardizationWorker = new BrowserPerfDataStandardizationWorker(getManager(), browserPerfProducer,
-                moduleConfig.getBufferPath(), moduleConfig.getBufferOffsetMaxFileSize(), moduleConfig.getBufferDataMaxFileSize(), moduleConfig.isBufferFileCleanWhenRestart());
-            browserPerfProducer.setStandardizationWorker(standardizationWorker);
+            // performance
+            BrowserPerfDataStandardizationWorker perfDataStandardizationWorker = new BrowserPerfDataStandardizationWorker(getManager(), browserPerfDataProducer,
+                moduleConfig.getPerfBufferPath(), moduleConfig.getPerfBufferOffsetMaxFileSize(),
+                moduleConfig.getPerfBufferDataMaxFileSize(), moduleConfig.isPerfBufferFileCleanWhenRestart());
+            browserPerfDataProducer.setStandardizationWorker(perfDataStandardizationWorker);
+
+            // error log
+            BrowserErrorLogStandardizationWorker errorLogStandardizationWorker = new BrowserErrorLogStandardizationWorker(getManager(), browserErrorLogProducer,
+                moduleConfig.getErrorLogBufferPath(), moduleConfig.getErrorLogBufferOffsetMaxFileSize(),
+                moduleConfig.getErrorLogBufferDataMaxFileSize(), moduleConfig.isErrorLogBufferFileCleanWhenRestart());
+            browserErrorLogProducer.setStandardizationWorker(errorLogStandardizationWorker);
         } catch (IOException e) {
             throw new ModuleStartException(e.getMessage(), e);
         }

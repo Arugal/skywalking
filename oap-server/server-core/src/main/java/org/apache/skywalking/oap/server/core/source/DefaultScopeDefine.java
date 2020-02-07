@@ -72,11 +72,12 @@ public class DefaultScopeDefine {
     public static final int PROFILE_TASK_SEGMENT_SNAPSHOT = 28;
 
     // browser
-    public static final int BROWSER_PERF_DATA = 40;
-    public static final int BROWSER_PERF_DETAIL = 41;
-    public static final int BROWSER_PAGE_PATH_PERF_DETAIL = 42;
-    public static final int BROWSER_SINGLE_VERSION_PERF_DETAIL = 43;
-    public static final int BROWSER_SINGLE_VERSION_PAGE_PATH_PERF_DETAIL = 44;
+    public static final int BROWSER_ERROR_LOG = 40;
+    public static final int BROWSER_APP_PERF = 41;
+    public static final int BROWSER_APP_PAGE_PERF = 42;
+    public static final int BROWSER_APP_SINGLE_VERSION_PERF = 43;
+    public static final int BROWSER_APP_ERROR_LOG = 44;
+    public static final int BROWSER_APP_PAGE_ERROR_LOG = 45;
 
     /**
      * Catalog of scope, the metrics processor could use this to group all generated metrics by oal rt.
@@ -85,14 +86,9 @@ public class DefaultScopeDefine {
     public static final String SERVICE_INSTANCE_CATALOG_NAME = "SERVICE_INSTANCE";
     public static final String ENDPOINT_CATALOG_NAME = "ENDPOINT";
 
-    public static final String BROWSER_PAGE_PATH_CATALOG_NAME = "BROWSER_PAGE_PATH";
-    public static final String BROWSER_SINGLE_VERSION_PAGE_PATH_CATALOG_NAME = "BROWSER_SINGLE_VERSION_PAGE_PATH";
-
     private static final Map<Integer, Boolean> SERVICE_CATALOG = new HashMap<>();
     private static final Map<Integer, Boolean> SERVICE_INSTANCE_CATALOG = new HashMap<>();
     private static final Map<Integer, Boolean> ENDPOINT_CATALOG = new HashMap<>();
-    private static final Map<Integer, Boolean> BROWSER_PAGE_PATH_CATALOG = new HashMap<>();
-    private static final Map<Integer, Boolean> BROWSER_SINGLE_VERSION_PAGE_PATH_CATALOG = new HashMap<>();
 
     public static class Listener implements AnnotationListener {
         @Override public Class<? extends Annotation> annotation() {
@@ -150,12 +146,6 @@ public class DefaultScopeDefine {
             case ENDPOINT_CATALOG_NAME:
                 ENDPOINT_CATALOG.put(id, Boolean.TRUE);
                 break;
-            case BROWSER_PAGE_PATH_CATALOG_NAME:
-                BROWSER_PAGE_PATH_CATALOG.put(id, Boolean.TRUE);
-                break;
-            case BROWSER_SINGLE_VERSION_PAGE_PATH_CATALOG_NAME:
-                BROWSER_SINGLE_VERSION_PAGE_PATH_CATALOG.put(id, Boolean.TRUE);
-                break;
         }
     }
 
@@ -191,14 +181,6 @@ public class DefaultScopeDefine {
 
     public static boolean inEndpointCatalog(int scopeId) {
         return ENDPOINT_CATALOG.containsKey(scopeId);
-    }
-
-    public static boolean inBrowserPageCatalog(int scopeId) {
-        return BROWSER_PAGE_PATH_CATALOG.containsKey(scopeId);
-    }
-
-    public static boolean inBrowserSingleVersionCatalog(int scopeId) {
-        return BROWSER_SINGLE_VERSION_PAGE_PATH_CATALOG.containsKey(scopeId);
     }
 
     /**

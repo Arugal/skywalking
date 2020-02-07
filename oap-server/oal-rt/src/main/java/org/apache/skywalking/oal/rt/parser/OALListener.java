@@ -31,9 +31,12 @@ public class OALListener extends OALParserBaseListener {
 
     private ConditionExpression conditionExpression;
 
-    public OALListener(OALScripts scripts) {
+    private String sourcePackage;
+
+    public OALListener(OALScripts scripts, String sourcePackage) {
         this.results = scripts.getMetricsStmts();
         this.collection = scripts.getDisableCollection();
+        this.sourcePackage = sourcePackage;
     }
 
     @Override
@@ -139,7 +142,7 @@ public class OALListener extends OALParserBaseListener {
     private void enterConditionValue(String value) {
         if (value.split("\\.").length == 2 && !value.startsWith("\"")) {
             // Value is an enum.
-            value = "org.apache.skywalking.oap.server.core.source." + value;
+            value = sourcePackage + value;
         }
         conditionExpression.setValue(value);
     }

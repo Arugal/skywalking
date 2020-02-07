@@ -21,11 +21,13 @@ package org.apache.skywalking.oap.server.recevier.browser.provider.handler;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.skywalking.apm.network.common.Commands;
+import org.apache.skywalking.apm.network.language.agent.BrowserErrorLog;
 import org.apache.skywalking.apm.network.language.agent.BrowserPerfData;
 import org.apache.skywalking.apm.network.language.agent.BrowserPerfServiceGrpc;
 import org.apache.skywalking.oap.server.library.module.ModuleManager;
 import org.apache.skywalking.oap.server.library.server.grpc.GRPCHandler;
-import org.apache.skywalking.oap.server.recevier.browser.provider.parse.BrowserPerfDataParse;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.errorlog.BrowserErrorLogParser;
+import org.apache.skywalking.oap.server.recevier.browser.provider.parser.performance.BrowserPerfDataParser;
 import org.apache.skywalking.oap.server.telemetry.TelemetryModule;
 import org.apache.skywalking.oap.server.telemetry.api.HistogramMetrics;
 import org.apache.skywalking.oap.server.telemetry.api.MetricsCreator;
@@ -37,28 +39,56 @@ import org.apache.skywalking.oap.server.telemetry.api.MetricsTag;
 @Slf4j
 public class BrowserPerfServiceHandler extends BrowserPerfServiceGrpc.BrowserPerfServiceImplBase implements GRPCHandler {
 
-    private final BrowserPerfDataParse.Producer browserPerfProducer;
-    private HistogramMetrics histogram;
+    private final BrowserPerfDataParser.Producer browserPerfProducer;
+    private final BrowserErrorLogParser.Producer browserErrorLogProducer;
 
-    public BrowserPerfServiceHandler(BrowserPerfDataParse.Producer browserPerfProducer, ModuleManager moduleManager) {
+    private HistogramMetrics perfHistogram;
+    private HistogramMetrics errorLogHistogram;
+
+    public BrowserPerfServiceHandler(BrowserPerfDataParser.Producer browserPerfProducer, BrowserErrorLogParser.Producer browserErrorLogProducer, ModuleManager moduleManager) {
         this.browserPerfProducer = browserPerfProducer;
+        this.browserErrorLogProducer = browserErrorLogProducer;
+
         MetricsCreator metricsCreator = moduleManager.find(TelemetryModule.NAME).provider().getService(MetricsCreator.class);
-        histogram = metricsCreator.createHistogramMetric("browser_perf_grpc_in_latency", "The process browser perf data",
+        perfHistogram = metricsCreator.createHistogramMetric("browser_perf_grpc_in_latency", "The process browser perf data",
+            MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
+
+        errorLogHistogram = metricsCreator.createHistogramMetric("browser_error_log_grpc_in_latency", "The process browser error log",
             MetricsTag.EMPTY_KEY, MetricsTag.EMPTY_VALUE);
     }
 
     @Override
-    public StreamObserver<BrowserPerfData> collect(StreamObserver<Commands> responseObserver) {
-        return new StreamObserver<BrowserPerfData>() {
+    public void collectPerfData(BrowserPerfData request, StreamObserver<Commands> responseObserver) {
+        if (log.isDebugEnabled()) {
+            log.debug("receive browser perf data");
+        }
+        try {
+            HistogramMetrics.Timer timer = perfHistogram.createTimer();
+            try {
+                browserPerfProducer.send(request);
+            } finally {
+                timer.finish();
+            }
+            responseObserver.onNext(Commands.newBuilder().build());
+        } catch (Throwable throwable) {
+            log.error(throwable.getMessage(), throwable);
+        } finally {
+            responseObserver.onCompleted();
+        }
+    }
+
+    @Override
+    public StreamObserver<BrowserErrorLog> collectErrorLogs(StreamObserver<Commands> responseObserver) {
+        return new StreamObserver<BrowserErrorLog>() {
             @Override
-            public void onNext(BrowserPerfData browserPerfData) {
+            public void onNext(BrowserErrorLog browserErrorLog) {
                 if (log.isDebugEnabled()) {
-                    log.debug("receive browser perf data");
+                    log.debug("receive browser error log");
                 }
 
-                HistogramMetrics.Timer timer = histogram.createTimer();
+                HistogramMetrics.Timer timer = errorLogHistogram.createTimer();
                 try {
-                    browserPerfProducer.send(browserPerfData);
+                    browserErrorLogProducer.send(browserErrorLog);
                 } finally {
                     timer.finish();
                 }

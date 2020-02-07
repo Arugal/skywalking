@@ -18,16 +18,28 @@
 
 package org.apache.skywalking.oap.server.core.alarm.provider;
 
-import java.util.*;
-
-import org.apache.skywalking.oap.server.core.Const;
 import org.apache.skywalking.oap.server.core.CoreModule;
-import org.apache.skywalking.oap.server.core.alarm.*;
-import org.apache.skywalking.oap.server.core.analysis.metrics.*;
-import org.apache.skywalking.oap.server.core.cache.*;
-import org.apache.skywalking.oap.server.core.register.*;
+import org.apache.skywalking.oap.server.core.alarm.AlarmCallback;
+import org.apache.skywalking.oap.server.core.alarm.EndpointMetaInAlarm;
+import org.apache.skywalking.oap.server.core.alarm.MetaInAlarm;
+import org.apache.skywalking.oap.server.core.alarm.MetricsNotify;
+import org.apache.skywalking.oap.server.core.alarm.ServiceInstanceMetaInAlarm;
+import org.apache.skywalking.oap.server.core.alarm.ServiceMetaInAlarm;
+import org.apache.skywalking.oap.server.core.analysis.metrics.Metrics;
+import org.apache.skywalking.oap.server.core.analysis.metrics.MetricsMetaInfo;
+import org.apache.skywalking.oap.server.core.analysis.metrics.WithMetadata;
+import org.apache.skywalking.oap.server.core.cache.EndpointInventoryCache;
+import org.apache.skywalking.oap.server.core.cache.ServiceInstanceInventoryCache;
+import org.apache.skywalking.oap.server.core.cache.ServiceInventoryCache;
+import org.apache.skywalking.oap.server.core.register.EndpointInventory;
+import org.apache.skywalking.oap.server.core.register.ServiceInstanceInventory;
+import org.apache.skywalking.oap.server.core.register.ServiceInventory;
 import org.apache.skywalking.oap.server.core.source.DefaultScopeDefine;
 import org.apache.skywalking.oap.server.library.module.ModuleManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class NotifyHandler implements MetricsNotify {
     private ServiceInventoryCache serviceInventoryCache;
@@ -84,36 +96,6 @@ public class NotifyHandler implements MetricsNotify {
 
             endpointMetaInAlarm.setName(textName);
             metaInAlarm = endpointMetaInAlarm;
-        } else if (DefaultScopeDefine.inBrowserPageCatalog(scope)) {
-            String metricsId = meta.getId();
-            String[] ids = metricsId.split(Const.ID_SPLIT);
-            int serviceId = Integer.parseInt(ids[0]);
-            int pagePathId = Integer.parseInt(ids[1]);
-            ServiceInventory serviceInventory = serviceInventoryCache.get(serviceId);
-            EndpointInventory endpointInventory = endpointInventoryCache.get(pagePathId);
-
-            BrowserPageMetaInAlarm browserPageMetaInAlarm = new BrowserPageMetaInAlarm();
-            browserPageMetaInAlarm.setMetricsName(meta.getMetricsName());
-            browserPageMetaInAlarm.setId(pagePathId);
-
-            String textName = endpointInventory.getName() + " in " + serviceInventory.getName();
-            browserPageMetaInAlarm.setName(textName);
-            metaInAlarm = browserPageMetaInAlarm;
-        } else if (DefaultScopeDefine.inBrowserSingleVersionCatalog(scope)) {
-            String metricsId = meta.getId();
-            String[] ids = metricsId.split(Const.ID_SPLIT);
-            int serviceVersionId = Integer.parseInt(ids[0]);
-            int pagePathId = Integer.parseInt(ids[1]);
-            ServiceInstanceInventory serviceInstanceInventory = serviceInstanceInventoryCache.get(serviceVersionId);
-            EndpointInventory endpointInventory = endpointInventoryCache.get(pagePathId);
-
-            BrowserSingleVersionPageMetaInAlarm versionPageMetaInAlarm = new BrowserSingleVersionPageMetaInAlarm();
-            versionPageMetaInAlarm.setMetricsName(meta.getMetricsName());
-            versionPageMetaInAlarm.setId(pagePathId);
-
-            String textName = endpointInventory.getName() + " in " + serviceInstanceInventory.getName();
-            versionPageMetaInAlarm.setName(textName);
-            metaInAlarm = versionPageMetaInAlarm;
         } else {
             return;
         }

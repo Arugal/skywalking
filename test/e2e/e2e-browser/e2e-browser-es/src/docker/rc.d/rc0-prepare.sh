@@ -21,6 +21,7 @@ original_wd=$(pwd)
 
 # substitute application.yml to be capable of es mode
 cd ${SW_HOME}/config \
+    && mv /application.yml application.yml \
     && gawk -f /es_storage.awk application.yml > es_storage_app.yml \
     && mv es_storage_app.yml application.yml \
     && sed '/<Loggers>/a<logger name="org.apache.skywalking.oap.server.storage" level="DEBUG"/>' log4j2.xml > log4j2debuggable.xml \

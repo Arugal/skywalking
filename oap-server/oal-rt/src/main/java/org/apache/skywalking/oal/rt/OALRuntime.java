@@ -114,7 +114,7 @@ public class OALRuntime implements OALEngine {
         allDispatcherContext = new AllDispatcherContext();
         metricsClasses = new ArrayList<>();
         dispatcherClasses = new ArrayList<>();
-        openEngineDebug = !StringUtil.isEmpty(System.getenv("SW_OAL_ENGINE_DEBUG"));
+        openEngineDebug = StringUtil.isNotEmpty(System.getenv("SW_OAL_ENGINE_DEBUG"));
     }
 
     @Override public void setStreamListener(StreamAnnotationListener listener) throws ModuleStartException {
@@ -145,7 +145,7 @@ public class OALRuntime implements OALEngine {
 
         OALScripts oalScripts;
         try {
-            ScriptParser scriptParser = ScriptParser.createFromFile(read);
+            ScriptParser scriptParser = ScriptParser.createFromFile(read, oalEngineGroup.getSourcePackage());
             oalScripts = scriptParser.parse();
         } catch (IOException e) {
             throw new ModuleStartException("OAL script parse analysis failure.", e);

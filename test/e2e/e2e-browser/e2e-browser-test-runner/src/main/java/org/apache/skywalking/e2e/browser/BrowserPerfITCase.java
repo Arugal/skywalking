@@ -30,7 +30,7 @@ import org.apache.skywalking.apm.network.common.ServiceType;
 import org.apache.skywalking.apm.network.language.agent.BrowserErrorLog;
 import org.apache.skywalking.apm.network.language.agent.BrowserPerfData;
 import org.apache.skywalking.apm.network.language.agent.BrowserPerfServiceGrpc;
-import org.apache.skywalking.apm.network.language.agent.PerfDetail;
+import org.apache.skywalking.apm.network.language.agent.ErrorCategory;
 import org.apache.skywalking.apm.network.register.v2.RegisterGrpc;
 import org.apache.skywalking.apm.network.register.v2.Service;
 import org.apache.skywalking.apm.network.register.v2.ServiceInstance;
@@ -63,13 +63,9 @@ import java.util.concurrent.CountDownLatch;
 
 import static java.util.Objects.nonNull;
 import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_MULTIPLE_LINEAR_METRICS;
 import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_PAGE_METRICS;
 import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_PAGE_MULTIPLE_LINEAR_METRICS;
 import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_SINGLE_VERSION_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_SINGLE_VERSION_MULTIPLE_LINEAR_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_SINGLE_VERSION_PAGE_METRICS;
-import static org.apache.skywalking.e2e.browser.metrics.BrowserMetricsQuery.ALL_BROWSER_SINGLE_VERSION_PAGE_MULTIPLE_LINEAR_METRICS;
 import static org.apache.skywalking.e2e.metrics.MetricsMatcher.verifyMetrics;
 import static org.apache.skywalking.e2e.metrics.MetricsMatcher.verifyPercentileMetrics;
 
@@ -149,10 +145,10 @@ public abstract class BrowserPerfITCase {
             verifyBrowserMetrics(minutesAgo, now, service.getKey());
 
             // service version
-            Instances instances = verifyBrowserSingleVersion(minutesAgo, now, service);
+            verifyBrowserSingleVersion(minutesAgo, now, service);
 
             // service page path
-            verifyBrowserPagePath(service, instances, minutesAgo, now);
+            verifyBrowserPagePath(service, minutesAgo, now);
         }
     }
 
@@ -176,7 +172,7 @@ public abstract class BrowserPerfITCase {
     }
 
 
-    private Endpoints verifyBrowserPagePath(org.apache.skywalking.e2e.service.Service service, Instances instances,
+    private Endpoints verifyBrowserPagePath(org.apache.skywalking.e2e.service.Service service,
                                             LocalDateTime minutesAgo, LocalDateTime now) throws Exception {
         Endpoints endpoints = queryClient.endpoints(new EndpointQuery().serviceId(String.valueOf(service.getKey())));
         log.info("endpoints: {}", endpoints);
@@ -187,11 +183,6 @@ public abstract class BrowserPerfITCase {
         // service page metrics
         for (Endpoint endpoint : endpoints.getEndpoints()) {
             verifyBrowserPagePathMetrics(minutesAgo, now, service, endpoint);
-
-            // service version page metrics
-            for (Instance instance : instances.getInstances()) {
-                verifyBrowserSingleVersionPagePathMetrics(minutesAgo, now, instance, endpoint);
-            }
         }
         return endpoints;
     }
@@ -200,41 +191,21 @@ public abstract class BrowserPerfITCase {
         for (String metricName : ALL_BROWSER_METRICS) {
             verifyMetrics(queryClient, metricName, serviceId, minutesAgo, now, retryInterval, this::generateTraffic);
         }
-
-        for (String metricName : ALL_BROWSER_MULTIPLE_LINEAR_METRICS) {
-            verifyPercentileMetrics(queryClient, metricName, serviceId, minutesAgo, now, retryInterval, this::generateTraffic);
-        }
     }
 
     private void verifyBrowserSingleVersionMetrics(Instance instance, LocalDateTime minutesAgo, LocalDateTime now) throws Exception {
         for (String metricName : ALL_BROWSER_SINGLE_VERSION_METRICS) {
             verifyMetrics(queryClient, metricName, instance.getKey(), minutesAgo, now, retryInterval, this::generateTraffic);
         }
-
-        for (String metricName : ALL_BROWSER_SINGLE_VERSION_MULTIPLE_LINEAR_METRICS) {
-            verifyPercentileMetrics(queryClient, metricName, instance.getKey(), minutesAgo, now, retryInterval, this::generateTraffic);
-        }
     }
 
     private void verifyBrowserPagePathMetrics(LocalDateTime minutesAgo, LocalDateTime now, org.apache.skywalking.e2e.service.Service service, Endpoint endpoint) throws Exception {
-        String id = String.join("_", service.getKey(), endpoint.getKey());
         for (String metricName : ALL_BROWSER_PAGE_METRICS) {
-            verifyMetrics(queryClient, metricName, id, minutesAgo, now, retryInterval, this::generateTraffic);
+            verifyMetrics(queryClient, metricName, endpoint.getKey(), minutesAgo, now, retryInterval, this::generateTraffic);
         }
 
         for (String metricName : ALL_BROWSER_PAGE_MULTIPLE_LINEAR_METRICS) {
-            verifyPercentileMetrics(queryClient, metricName, id, minutesAgo, now, retryInterval, this::generateTraffic);
-        }
-    }
-
-    private void verifyBrowserSingleVersionPagePathMetrics(LocalDateTime minutesAgo, LocalDateTime now, Instance instance, Endpoint endpoint) throws Exception {
-        String id = String.join("_", instance.getKey(), endpoint.getKey());
-        for (String metricName : ALL_BROWSER_SINGLE_VERSION_PAGE_METRICS) {
-            verifyMetrics(queryClient, metricName, id, minutesAgo, now, retryInterval, this::generateTraffic);
-        }
-
-        for (String metricName : ALL_BROWSER_SINGLE_VERSION_PAGE_MULTIPLE_LINEAR_METRICS) {
-            verifyPercentileMetrics(queryClient, metricName, id, minutesAgo, now, retryInterval, this::generateTraffic);
+            verifyPercentileMetrics(queryClient, metricName, endpoint.getKey(), minutesAgo, now, retryInterval, this::generateTraffic);
         }
     }
 
@@ -273,37 +244,44 @@ public abstract class BrowserPerfITCase {
                     // ignore
                 }
             }
-            BrowserPerfData.Builder builder = BrowserPerfData.newBuilder()
-                .setUniqueId(UUID.randomUUID().toString())
+            BrowserPerfData.Builder perfBuilder = BrowserPerfData.newBuilder()
                 .setServiceId(browserId)
                 .setServiceVersionId(browserSingleVersionId)
                 .setPagePath("/e2e-browser")
-                .addLogs(BrowserErrorLog.newBuilder()
-                    .setCatalog("/e2e-browser")
+                .setRedirectTime(10)
+                .setDnsTime(10)
+                .setReqTime(10)
+                .setDomAnalysisTime(10)
+                .setDomReadyTime(10)
+                .setBlankTime(10);
+            sendBrowserPerfData(perfBuilder.build());
+
+            for (ErrorCategory category : ErrorCategory.values()) {
+                if (category == ErrorCategory.UNRECOGNIZED) {
+                    continue;
+                }
+                BrowserErrorLog.Builder errorLogBuilder = BrowserErrorLog.newBuilder()
+                    .setUniqueId(UUID.randomUUID().toString())
+                    .setServiceId(browserId)
+                    .setServiceVersionId(browserSingleVersionId)
+                    .setPagePath("/e2e-browser")
+                    .setCategory(category)
                     .setMessage("test")
                     .setLine(1)
                     .setCol(1)
                     .setStack("e2e")
-                    .setErrorUrl("/e2e/browser")
-                    .build())
-                .setPerfDetail(PerfDetail.newBuilder()
-                    .setRedirectTime(10)
-                    .setDnsTime(10)
-                    .setReqTime(10)
-                    .setDomAnalysisTime(10)
-                    .setDomReadyTime(10)
-                    .setBlankTime(10)
-                    .build());
-            sendBrowserPerfData(builder.build());
+                    .setErrorUrl("/e2e/browser");
+                sendBrowserErrorLog(errorLogBuilder.build());
+            }
         } catch (Exception e) {
             log.warn(e.getMessage(), e);
         }
     }
 
-    private void sendBrowserPerfData(BrowserPerfData browserPerfData) throws InterruptedException {
+    private void sendBrowserErrorLog(BrowserErrorLog browserErrorLog) throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
-        StreamObserver<BrowserPerfData> collect = browserPerfServiceStub.collect(new StreamObserver<Commands>() {
+        StreamObserver<BrowserErrorLog> collectStream = browserPerfServiceStub.collectErrorLogs(new StreamObserver<Commands>() {
             @Override
             public void onNext(Commands commands) {
 
@@ -320,8 +298,31 @@ public abstract class BrowserPerfITCase {
                 latch.countDown();
             }
         });
-        collect.onNext(browserPerfData);
-        collect.onCompleted();
+        collectStream.onNext(browserErrorLog);
+        collectStream.onCompleted();
+        latch.await();
+    }
+
+    private void sendBrowserPerfData(BrowserPerfData browserPerfData) throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        browserPerfServiceStub.collectPerfData(browserPerfData, new StreamObserver<Commands>() {
+            @Override
+            public void onNext(Commands commands) {
+
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+                latch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
         latch.await();
     }
 

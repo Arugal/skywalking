@@ -27,17 +27,19 @@ import org.apache.skywalking.oap.server.library.module.ModuleStartException;
 import org.apache.skywalking.oap.server.library.module.Service;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
+ *
+ * Provide an entry point to activate {@link OALEngine}.
  *
  * @author zhangwei
  */
 @Slf4j
 public class OALEngineService implements Service {
 
-    private final Map<OALEngine.Group, OALEngine> engineMap = new HashMap<>();
+    private final Set<OALEngine.Group> oalEngineGroupSet = new HashSet<>();
     private final ModuleManager moduleManager;
 
     public OALEngineService(ModuleManager moduleManager) {
@@ -45,12 +47,10 @@ public class OALEngineService implements Service {
     }
 
     public void activate(OALEngine.Group group) throws ModuleStartException {
-        activate(group, OALEngineService.class.getClassLoader());
-    }
-
-    public void activate(OALEngine.Group group, ClassLoader classLoader) throws ModuleStartException {
-        // It's only activated once
-        if (!engineMap.containsKey(group)) {
+        /**
+         * Each {@link OALEngine.Group} is activated only once.
+         */
+        if (!oalEngineGroupSet.contains(group)) {
             try {
                 if (log.isDebugEnabled()) {
                     log.debug("activate {} OALEngine", group.name());
@@ -60,10 +60,10 @@ public class OALEngineService implements Service {
                 oalEngine.setStreamListener(streamAnnotationListener);
                 oalEngine.setDispatcherListener(moduleManager.find(CoreModule.NAME).provider().getService(SourceReceiver.class).getDispatcherDetectorListener());
 
-                oalEngine.start(classLoader);
+                oalEngine.start(OALEngineService.class.getClassLoader());
                 oalEngine.notifyAllListeners();
 
-                engineMap.put(group, oalEngine);
+                oalEngineGroupSet.add(group);
             } catch (Exception e) {
                 throw new ModuleStartException(e.getMessage(), e);
             }

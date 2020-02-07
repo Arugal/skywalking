@@ -45,10 +45,11 @@ SRC_SERVICE_INSTANCE_CLR_THREAD: 'ServiceInstanceCLRThread';
 SRC_ENVOY_INSTANCE_METRIC: 'EnvoyInstanceMetric';
 
 // Browser keywords
-SRC_BROWSER_PERF_DETAIL: 'BrowserPerfDetail';
-SRC_BROWSER_PAGE_PATH_PERF_DETAIL: 'BrowserPagePathPerfDetail';
-SRC_BROWSER_SINGLE_VERSION_PERF_DETAIL: 'BrowserSingleVersionPerfDetail';
-SRC_BROWSER_SINGLE_VERSION_PAGE_PATH_PERF_DETAIL: 'BrowserSingleVersionPagePathPerfDetail';
+SRC_BROWSER_APP_PERF: 'BrowserAppPerf';
+SRC_BROWSER_APP_PAGE_PERF: 'BrowserAppPagePerf';
+SRC_BROWSER_APP_SINGLE_VERSION_PERF: 'BrowserAppSingleVersionPerf';
+SRC_BROWSER_APP_ERROR_LOG: 'BrowserAppErrorLog';
+SRC_BROWSER_APP_PAGE_ERROR_LOG: 'BrowserAppPageErrorLog';
 
 //hard code sources, only used when need to be deactived.
 SRC_SEGMENT: 'segment';

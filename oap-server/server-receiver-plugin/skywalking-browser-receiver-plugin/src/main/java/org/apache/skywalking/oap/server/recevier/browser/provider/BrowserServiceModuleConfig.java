@@ -26,11 +26,14 @@ import org.apache.skywalking.oap.server.library.module.ModuleConfig;
  * @author zhangwei
  */
 public class BrowserServiceModuleConfig extends ModuleConfig {
-    @Setter @Getter private String bufferPath;
-    @Setter @Getter private int bufferOffsetMaxFileSize;
-    @Setter @Getter private int bufferDataMaxFileSize;
-    @Setter @Getter private boolean bufferFileCleanWhenRestart;
-
+    @Setter @Getter private String perfBufferPath;
+    @Setter @Getter private int perfBufferOffsetMaxFileSize;
+    @Setter @Getter private int perfBufferDataMaxFileSize;
+    @Setter @Getter private boolean perfBufferFileCleanWhenRestart;
+    @Setter @Getter private String errorLogBufferPath;
+    @Setter @Getter private int errorLogBufferOffsetMaxFileSize;
+    @Setter @Getter private int errorLogBufferDataMaxFileSize;
+    @Setter @Getter private boolean errorLogBufferFileCleanWhenRestart;
     /**
      * The sample rate precision is 1/10000. 10000 means 100% sample in default.
      */
