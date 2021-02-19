@@ -72,14 +72,11 @@ services:
     image: selenium/hub:4.0.0-alpha-7-prerelease-20201009
     networks:
       - e2e
+    expose:
+      - 4444
     depends_on:
       test-ui:
         condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "sh", "-c", "nc -nz 127.0.0.1 4444" ]
-      interval: 5s
-      timeout: 60s
-      retries: 120
 
   chrome:
     image: selenium/node-chrome:4.0.0-alpha-7-prerelease-20201009
@@ -106,7 +103,7 @@ services:
       chrome:
         condition: service_started
       selenium-hub:
-        condition: service_healthy
+        condition: service_started
       test-ui:
         condition: service_healthy
 
