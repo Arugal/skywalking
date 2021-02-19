@@ -17,6 +17,7 @@
 
 package org.apache.skywalking.e2e.browser;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.skywalking.e2e.annotation.ContainerHostAndPort;
 import org.apache.skywalking.e2e.annotation.DockerCompose;
@@ -24,8 +25,41 @@ import org.apache.skywalking.e2e.base.SkyWalkingE2E;
 import org.apache.skywalking.e2e.base.SkyWalkingTestAdapter;
 import org.apache.skywalking.e2e.common.HostAndPort;
 import org.apache.skywalking.e2e.retryable.RetryableTest;
+import org.apache.skywalking.e2e.service.Service;
+import org.apache.skywalking.e2e.service.ServicesMatcher;
+import org.apache.skywalking.e2e.service.ServicesQuery;
+import org.apache.skywalking.e2e.service.endpoint.Endpoint;
+import org.apache.skywalking.e2e.service.endpoint.EndpointQuery;
+import org.apache.skywalking.e2e.service.endpoint.Endpoints;
+import org.apache.skywalking.e2e.service.endpoint.EndpointsMatcher;
+import org.apache.skywalking.e2e.service.instance.Instance;
+import org.apache.skywalking.e2e.service.instance.Instances;
+import org.apache.skywalking.e2e.service.instance.InstancesMatcher;
+import org.apache.skywalking.e2e.service.instance.InstancesQuery;
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.DockerComposeContainer;
+
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.ALL_BROWSER_PAGE_METRICS;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.ALL_BROWSER_PAGE_MULTIPLE_LINEAR_METRICS;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_ERROR_RATE;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_DOM_ANALYSIS_AVG;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_DOM_READY_AVG;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_DOM_READY_PERCENTILE;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_ERROR_SUM;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_JS_ERROR_SUM;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_LOAD_PAGE_AVG;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_LOAD_PAGE_PERCENTILE;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_PV;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_REDIRECT_AVG;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_RES_AVG;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_TTL_AVG;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PV;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_SINGLE_VERSION_ERROR_SUM;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_SINGLE_VERSION_PV;
+import static org.apache.skywalking.e2e.metrics.MetricsMatcher.verifyMetrics;
+import static org.apache.skywalking.e2e.metrics.MetricsMatcher.verifyPercentileMetrics;
+import static org.apache.skywalking.e2e.utils.Times.now;
+import static org.apache.skywalking.e2e.utils.Yamls.load;
 
 @Slf4j
 @SkyWalkingE2E
@@ -49,11 +83,94 @@ public class BrowserWithClientJSE2E extends SkyWalkingTestAdapter {
     // browser data
 
     @RetryableTest
-    public void test1() {
-        LOGGER.info("test1");
+    public void verifyBrowserData() throws Exception {
+        final List<Service> services = graphql.browserServices(new ServicesQuery().start(startTime).end(now()));
+        LOGGER.info("services: {}", services);
+
+        load("expected/browser-with-client-js/services.yml").as(ServicesMatcher.class).verify(services);
+
+        for (Service service : services) {
+            LOGGER.info("verifying service version: {}", service);
+            // browser metrics
+            verifyBrowserMetrics(service);
+            // browser single version
+            verifyBrowserSingleVersion(service);
+            // browser page path
+            verifyBrowserPagePath(service);
+        }
     }
 
     // error log
 
     // trace
+
+    private static final String[] BROWSER_METRICS = {
+        BROWSER_APP_PV,
+        BROWSER_APP_ERROR_RATE
+    };
+
+    private void verifyBrowserMetrics(final Service service) throws Exception {
+        for (String metricName : BROWSER_METRICS) {
+            verifyMetrics(graphql, metricName, service.getKey(), startTime);
+        }
+    }
+
+    private void verifyBrowserSingleVersion(final Service service) throws Exception {
+        Instances instances = graphql.instances(
+            new InstancesQuery().serviceId(service.getKey()).start(startTime).end(now()));
+        LOGGER.info("instances: {}", instances);
+        load("expected/browser-with-client-js/version.yml").as(InstancesMatcher.class).verify(instances);
+        // service version metrics
+        for (Instance instance : instances.getInstances()) {
+            verifyBrowserSingleVersionMetrics(instance);
+        }
+    }
+
+    public static final String[] BROWSER_SINGLE_VERSION_METRICS = {
+        BROWSER_APP_SINGLE_VERSION_PV,
+        BROWSER_APP_SINGLE_VERSION_ERROR_SUM
+    };
+
+    private void verifyBrowserSingleVersionMetrics(Instance instance) throws Exception {
+        for (String metricName : BROWSER_SINGLE_VERSION_METRICS) {
+            verifyMetrics(graphql, metricName, instance.getKey(), startTime);
+        }
+    }
+
+    private void verifyBrowserPagePath(final Service service) throws Exception {
+        Endpoints endpoints = graphql.endpoints(new EndpointQuery().serviceId(String.valueOf(service.getKey())));
+        LOGGER.info("endpoints: {}", endpoints);
+        load("expected/browser-with-client-js/page-path.yml").as(EndpointsMatcher.class).verify(endpoints);
+        // service page metrics
+        for (Endpoint endpoint : endpoints.getEndpoints()) {
+            verifyBrowserPagePathMetrics(endpoint);
+        }
+    }
+
+    public static final String[] BROWSER_PAGE_METRICS = {
+        BROWSER_APP_PAGE_PV,
+        BROWSER_APP_PAGE_ERROR_SUM,
+        BROWSER_APP_PAGE_JS_ERROR_SUM,
+        BROWSER_APP_PAGE_REDIRECT_AVG,
+        BROWSER_APP_PAGE_DOM_ANALYSIS_AVG,
+        BROWSER_APP_PAGE_DOM_READY_AVG,
+        BROWSER_APP_PAGE_LOAD_PAGE_AVG,
+        BROWSER_APP_PAGE_RES_AVG,
+        BROWSER_APP_PAGE_TTL_AVG,
+        };
+
+    public static final String[] BROWSER_PAGE_MULTIPLE_LINEAR_METRICS = {
+        BROWSER_APP_PAGE_DOM_READY_PERCENTILE,
+        BROWSER_APP_PAGE_LOAD_PAGE_PERCENTILE,
+        };
+
+    private void verifyBrowserPagePathMetrics(Endpoint endpoint) throws Exception {
+        for (String metricName : BROWSER_PAGE_METRICS) {
+            verifyMetrics(graphql, metricName, endpoint.getKey(), startTime);
+        }
+
+        for (String metricName : BROWSER_PAGE_MULTIPLE_LINEAR_METRICS) {
+            verifyPercentileMetrics(graphql, metricName, endpoint.getKey(), startTime);
+        }
+    }
 }
