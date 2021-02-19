@@ -39,8 +39,6 @@ import org.apache.skywalking.e2e.service.instance.InstancesQuery;
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.DockerComposeContainer;
 
-import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.ALL_BROWSER_PAGE_METRICS;
-import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.ALL_BROWSER_PAGE_MULTIPLE_LINEAR_METRICS;
 import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_ERROR_RATE;
 import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_DOM_ANALYSIS_AVG;
 import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_DOM_READY_AVG;
