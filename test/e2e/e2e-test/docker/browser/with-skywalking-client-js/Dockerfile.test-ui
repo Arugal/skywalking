@@ -33,11 +33,11 @@ ARG CLIENT_JS_TEST_CODE_URL=https://github.com/SkyAPMTest/skywalking-client-test
 WORKDIR /skywalking-client-test
 ADD ${CLIENT_JS_TEST_CODE_URL} .
 RUN tar -xf ${CLIENT_JS_TEST_CODE} --strip 1 && rm ${CLIENT_JS_TEST_CODE} && rm src/index.js
-COPY skywalking-client-js-test/index.js src/index.js
+COPY with-skywalking-client-js/index.js src/index.js
 
 RUN npm link skywalking-client-js && npm install && npm run build
 
 FROM nginx:1.19
 
 COPY --from=builder /skywalking-client-test/dist/* /etc/nginx/html/
-COPY skywalking-client-js-test/nginx.conf /etc/nginx/nginx.conf
+COPY with-skywalking-client-js/nginx.conf /etc/nginx/nginx.conf
