@@ -70,7 +70,6 @@ services:
 
   selenium-hub:
     image: selenium/hub:4.0.0-alpha-7-prerelease-20201009
-    container_name: selenium-hub
     networks:
       - e2e
     depends_on:

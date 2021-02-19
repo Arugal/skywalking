@@ -31,6 +31,7 @@ import org.testcontainers.containers.DockerComposeContainer;
 @SkyWalkingE2E
 public class BrowserWithClientJSE2E extends SkyWalkingTestAdapter {
 
+    @SuppressWarnings("unused")
     @DockerCompose({
         "docker/browser/docker-compose.h2.client-js.yml"
     })
