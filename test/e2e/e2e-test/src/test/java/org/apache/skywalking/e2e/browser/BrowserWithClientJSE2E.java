@@ -39,7 +39,7 @@ import org.apache.skywalking.e2e.service.instance.InstancesQuery;
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.DockerComposeContainer;
 
-import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_ERROR_RATE;
+import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_ERROR_SUM;
 import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_DOM_ANALYSIS_AVG;
 import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_DOM_READY_AVG;
 import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_PAGE_DOM_READY_PERCENTILE;
@@ -104,7 +104,7 @@ public class BrowserWithClientJSE2E extends SkyWalkingTestAdapter {
 
     private static final String[] BROWSER_METRICS = {
         BROWSER_APP_PV,
-        BROWSER_APP_ERROR_RATE
+        BROWSER_APP_ERROR_SUM
     };
 
     private void verifyBrowserMetrics(final Service service) throws Exception {
