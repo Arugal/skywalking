@@ -36,6 +36,13 @@ import org.apache.skywalking.e2e.service.instance.Instance;
 import org.apache.skywalking.e2e.service.instance.Instances;
 import org.apache.skywalking.e2e.service.instance.InstancesMatcher;
 import org.apache.skywalking.e2e.service.instance.InstancesQuery;
+import org.apache.skywalking.e2e.topo.Call;
+import org.apache.skywalking.e2e.topo.TopoMatcher;
+import org.apache.skywalking.e2e.topo.TopoQuery;
+import org.apache.skywalking.e2e.topo.Topology;
+import org.apache.skywalking.e2e.trace.Trace;
+import org.apache.skywalking.e2e.trace.TracesMatcher;
+import org.apache.skywalking.e2e.trace.TracesQuery;
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.DockerComposeContainer;
 
@@ -56,6 +63,8 @@ import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_
 import static org.apache.skywalking.e2e.metrics.BrowserMetricsQuery.BROWSER_APP_SINGLE_VERSION_PV;
 import static org.apache.skywalking.e2e.metrics.MetricsMatcher.verifyMetrics;
 import static org.apache.skywalking.e2e.metrics.MetricsMatcher.verifyPercentileMetrics;
+import static org.apache.skywalking.e2e.metrics.MetricsQuery.ALL_SERVICE_RELATION_CLIENT_METRICS;
+import static org.apache.skywalking.e2e.metrics.MetricsQuery.ALL_SERVICE_RELATION_SERVER_METRICS;
 import static org.apache.skywalking.e2e.utils.Times.now;
 import static org.apache.skywalking.e2e.utils.Yamls.load;
 
@@ -78,8 +87,6 @@ public class BrowserWithClientJSE2E extends SkyWalkingTestAdapter {
         queryClient(swWebappHostPort);
     }
 
-    // browser data
-
     @RetryableTest
     public void verifyBrowserData() throws Exception {
         final List<Service> services = graphql.browserServices(new ServicesQuery().start(startTime).end(now()));
@@ -98,9 +105,34 @@ public class BrowserWithClientJSE2E extends SkyWalkingTestAdapter {
         }
     }
 
-    // error log
+    @RetryableTest
+    public void errorLogs() throws Exception {
+        List<BrowserErrorLog> logs = graphql.browserErrorLogs(new BrowserErrorLogQuery().start(startTime).end(now()));
 
-    // trace
+        LOGGER.info("errorLogs: {}", logs);
+
+        load("expected/browser-with-client-js/error-log.yml").as(BrowserErrorLogsMatcher.class).verifyLoosely(logs);
+    }
+
+    @RetryableTest
+    void traces() throws Exception {
+        final List<Trace> traces = graphql.traces(new TracesQuery().start(startTime).end(now()).orderByStartTime());
+
+        LOGGER.info("traces: {}", traces);
+
+        load("expected/browser-with-client-js/traces.yml").as(TracesMatcher.class).verifyLoosely(traces);
+    }
+
+    @RetryableTest
+    void topology() throws Exception {
+        final Topology topology = graphql.topo(new TopoQuery().stepByMinute().start(startTime.minusDays(1)).end(now()));
+
+        LOGGER.info("topology: {}", topology);
+
+        load("expected/browser-with-client-js/topo.yml").as(TopoMatcher.class).verify(topology);
+
+        verifyServiceRelationMetrics(topology.getCalls());
+    }
 
     private static final String[] BROWSER_METRICS = {
         BROWSER_APP_PV,
@@ -169,6 +201,33 @@ public class BrowserWithClientJSE2E extends SkyWalkingTestAdapter {
 
         for (String metricName : BROWSER_PAGE_MULTIPLE_LINEAR_METRICS) {
             verifyPercentileMetrics(graphql, metricName, endpoint.getKey(), startTime);
+        }
+    }
+
+    private void verifyServiceRelationMetrics(final List<Call> calls) throws Exception {
+        verifyRelationMetrics(calls, ALL_SERVICE_RELATION_CLIENT_METRICS, ALL_SERVICE_RELATION_SERVER_METRICS);
+    }
+
+    private void verifyRelationMetrics(final List<Call> calls,
+                                       final String[] relationClientMetrics,
+                                       final String[] relationServerMetrics) throws Exception {
+        for (Call call : calls) {
+            for (String detectPoint : call.getDetectPoints()) {
+                switch (detectPoint) {
+                    case "CLIENT": {
+                        for (String metricName : relationClientMetrics) {
+                            verifyMetrics(graphql, metricName, call.getId(), startTime);
+                        }
+                        break;
+                    }
+                    case "SERVER": {
+                        for (String metricName : relationServerMetrics) {
+                            verifyMetrics(graphql, metricName, call.getId(), startTime);
+                        }
+                        break;
+                    }
+                }
+            }
         }
     }
 }
