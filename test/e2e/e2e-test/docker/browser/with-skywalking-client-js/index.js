@@ -24,6 +24,7 @@ ClientMonitor.register({
     serviceVersion: 'v1.0.0',
     vue: Vue,
     useFmp: true,
+    traceSDKInternal: true
 });
 
 // vue error
