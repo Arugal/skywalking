@@ -23,6 +23,7 @@ import org.apache.skywalking.e2e.annotation.DockerCompose;
 import org.apache.skywalking.e2e.base.SkyWalkingE2E;
 import org.apache.skywalking.e2e.base.SkyWalkingTestAdapter;
 import org.apache.skywalking.e2e.common.HostAndPort;
+import org.apache.skywalking.e2e.retryable.RetryableTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.DockerComposeContainer;
 
@@ -45,6 +46,11 @@ public class BrowserWithClientJSE2E extends SkyWalkingTestAdapter {
     }
 
     // browser data
+
+    @RetryableTest
+    public void test1() {
+        LOGGER.info("test1");
+    }
 
     // error log
 

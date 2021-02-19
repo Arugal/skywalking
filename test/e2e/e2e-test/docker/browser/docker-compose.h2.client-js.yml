@@ -102,12 +102,13 @@ services:
       dockerfile: with-skywalking-client-js/Dockerfile.generate-traffic
     networks:
       - e2e
+    restart: always
     depends_on:
       chrome:
         condition: service_started
-      test-ui:
-        condition: service_healthy
       selenium-hub:
+        condition: service_healthy
+      test-ui:
         condition: service_healthy
 
 networks:
