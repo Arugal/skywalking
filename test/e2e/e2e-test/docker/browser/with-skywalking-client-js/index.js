@@ -23,8 +23,7 @@ ClientMonitor.register({
     pagePath: 'index.html',
     serviceVersion: 'v1.0.0',
     vue: Vue,
-    useFmp: true,
-    traceSDKInternal: true
+    useFmp: true
 });
 
 // vue error
@@ -64,5 +63,5 @@ fetch('/info', {
         'Content-Type': 'application/json'
     },
 }).then((data) => {
-    console.log(data);
+    console.log(data.body);
 })
