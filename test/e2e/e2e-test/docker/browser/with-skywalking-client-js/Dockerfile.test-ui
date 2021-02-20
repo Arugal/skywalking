@@ -23,7 +23,7 @@ ARG CLIENT_JS_CODE_URL=https://github.com/apache/skywalking-client-js/archive/${
 WORKDIR /skywalking-client-js
 ADD ${CLIENT_JS_CODE_URL} .
 RUN tar -xf ${CLIENT_JS_CODE} --strip 1 && rm ${CLIENT_JS_CODE}
-RUN sed -in-place -e 's/version": "0.3.0/version": "1000.0.0/g' package.json \
+RUN sed -in-place -e 's/300000/3000/g' src/trace/segment.ts \
     && npm run rebuild && npm link
 
 # download and build skywalking client test
@@ -38,8 +38,7 @@ RUN tar -xf ${CLIENT_JS_TEST_CODE} --strip 1 \
     && rm src/index.js
 COPY with-skywalking-client-js/index.js src/index.js
 
-RUN sed -in-place -e 's/skywalking-client-js": "^0.1.0/skywalking-client-js": "^0.3.0/g' package.json \
-    && npm install
+RUN npm install && rm -rf node_modules/skywalking-client-js && npm link skywalking-client-js && npm run build
 
 FROM nginx:1.19
 
