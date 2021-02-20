@@ -36,7 +36,7 @@ try:
 
     while True:
         test_screenshot()
-        time.sleep(10)
+        time.sleep(40)
 
 finally:
     driver.quit()
