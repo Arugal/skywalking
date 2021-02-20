@@ -14,20 +14,11 @@
 # limitations under the License.
 
 nodes:
-  - id: VXNlcg==.0
-    name: User
-    type: USER
-    isReal: false
-  - id: ZTJlLXNlcnZpY2UtamF2YS1jb25zdW1lcg==.1
-    name: e2e-service-java-consumer
-    type: Tomcat
+  - id: dGVzdC11aTxicm93c2VyPg==.1
+    name: test-ui<browser>
     isReal: true
-  - id: Z28yc2t5.1
-    name: go2sky
-    type: GoHttpServer
-    isReal: true
-  - id: ZTJlLXNlcnZpY2UtamF2YS1wcm92aWRlcg==.1
-    name: e2e-service-java-provider
+  - id: WW91cl9BcHBsaWNhdGlvbk5hbWU=.1
+    name: Your_ApplicationName
     type: Tomcat
     isReal: true
   - id: bG9jYWxob3N0Oi0x.0
@@ -35,25 +26,14 @@ nodes:
     type: H2
     isReal: false
 calls:
-  - id: VXNlcg==.0-ZTJlLXNlcnZpY2UtamF2YS1jb25zdW1lcg==.1
-    source: VXNlcg==.0
-    detectPoints:
-      - SERVER
-    target: ZTJlLXNlcnZpY2UtamF2YS1jb25zdW1lcg==.1
-  - id: ZTJlLXNlcnZpY2UtamF2YS1jb25zdW1lcg==.1-Z28yc2t5.1
-    source: ZTJlLXNlcnZpY2UtamF2YS1jb25zdW1lcg==.1
-    detectPoints:
-      - CLIENT
-      - SERVER
-    target: Z28yc2t5.1
-  - id: Z28yc2t5.1-ZTJlLXNlcnZpY2UtamF2YS1wcm92aWRlcg==.1
-    source: Z28yc2t5.1
-    detectPoints:
-      - CLIENT
-      - SERVER
-    target: ZTJlLXNlcnZpY2UtamF2YS1wcm92aWRlcg==.1
-  - id: ZTJlLXNlcnZpY2UtamF2YS1wcm92aWRlcg==.1-bG9jYWxob3N0Oi0x.0
-    source: ZTJlLXNlcnZpY2UtamF2YS1wcm92aWRlcg==.1
+  - id: WW91cl9BcHBsaWNhdGlvbk5hbWU=.1-bG9jYWxob3N0Oi0x.0
+    source: WW91cl9BcHBsaWNhdGlvbk5hbWU=.1
     detectPoints:
       - CLIENT
     target: bG9jYWxob3N0Oi0x.0
+  - id: dGVzdC11aTxicm93c2VyPg==.1-WW91cl9BcHBsaWNhdGlvbk5hbWU=.1
+    source: dGVzdC11aTxicm93c2VyPg==.1
+    detectPoints:
+      - CLIENT
+      - SERVER
+    target: WW91cl9BcHBsaWNhdGlvbk5hbWU=.1

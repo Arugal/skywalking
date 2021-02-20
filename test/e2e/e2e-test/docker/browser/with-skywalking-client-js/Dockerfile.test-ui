@@ -24,7 +24,8 @@ WORKDIR /skywalking-client-js
 ADD ${CLIENT_JS_CODE_URL} .
 RUN tar -xf ${CLIENT_JS_CODE} --strip 1 && rm ${CLIENT_JS_CODE}
 RUN sed -in-place -e 's/300000/3000/g' src/trace/segment.ts \
-    && npm run rebuild && npm link
+    && npm run rebuild \
+    && npm link
 
 # download and build skywalking client test
 ARG CLIENT_JS_TEST_COMMIT_HASH=396c2ab5b5db928de421e1bd002a9b6479e63fc2
@@ -38,7 +39,10 @@ RUN tar -xf ${CLIENT_JS_TEST_CODE} --strip 1 \
     && rm src/index.js
 COPY with-skywalking-client-js/index.js src/index.js
 
-RUN npm install && rm -rf node_modules/skywalking-client-js && npm link skywalking-client-js && npm run build
+RUN npm install \
+    && rm -rf node_modules/skywalking-client-js \
+    && npm link skywalking-client-js \
+    && npm run build
 
 FROM nginx:1.19
 

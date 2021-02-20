@@ -16,6 +16,14 @@
 traces:
   - key: not null
     endpointNames:
+      - index.html
+    duration: ge 0
+    start: gt 0
+    isError: false
+    traceIds:
+      - not null
+  - key: not null
+    endpointNames:
       - /info
     duration: ge 0
     start: gt 0
